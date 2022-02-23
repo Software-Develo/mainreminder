@@ -2,11 +2,12 @@ import 'dart:core';
 
 import 'main.dart';
 import 'package:intl/intl.dart';
-import 'details_page.dart';
 
 
 List<DataOfRem> arr = [];
-List<int> indexes = [];
+List<int> indexesForToday = [];
+List<int> indexesForTomorrow = [];
+List<int> indexesForYesterday = [];
 List<int> freeIndexes = [];
 List<int> busyIndexes = [];
 
@@ -41,14 +42,14 @@ bool switchNight2 = false;// Переключатель ночи
 bool switchAllday2 = false;// Переключатель всего дня
 
 class DataOfRem {
-  final bool? delete;
-  final bool? active;
   final String title;
   final String note;
   final String date;
   final String time;
   final String extime;
 
+  final bool? delete;
+  final bool? active;
   final bool morning;// Переключатель утра
   final bool afternoon;// Переключатель дня
   final bool evening;// Переключатель вечера
@@ -80,9 +81,30 @@ void deleteData(int? index){
   arr.remove(index);
 }
 
-void loadData(){
+String timeToString(String extime){
+  String time = "";
 
-  String time = '';
+  if (extime != 'Exact time') {
+    time = extime;
+  }
+  else {
+    if (switchMorning) time = 'Morning';
+    if (switchAfternoon)
+      if (time == '') time = 'Afternoon';
+      else time += ', Afternoon';
+    if (switchEvening)
+      if (time == '') time = 'Evening';
+      else time += ', Evening';
+    if (switchNight)
+      if (time == '') time = 'Night';
+      else time += ', Night';
+    if (switchAllday) time = 'All day';
+  }
+  return time;
+}
+
+void loadStartData(){
+  String timeString = '';
   String title = '';
   String note = '';
   String date = '';
@@ -90,26 +112,32 @@ void loadData(){
 
   bool? del, act;
 
+  int year = 0, month = 0, day = 0;
+  int? hour, minute;
+
   val_rem = 0;
 
+  DateTime dateTime = DateTime.now();
+
   arr.clear();
-  indexes.clear();
+  indexesForToday.clear();
+  indexesForTomorrow.clear();
+  indexesForYesterday.clear();
   freeIndexes.clear();
 
   for(int i = 0; i < 25; i++){
-    time  = '';
+    timeString  = '';
     del = data.read('delete$i');
     act = data.read('active$i');
-
-
-
-
-
 
     if(del == null || del){
       freeIndexes.add(i);
     }else{
-      if(act!) val_rem++;
+      year = data.read('year$i');
+      month = data.read('month$i');
+      day = data.read('day$i');
+      hour = data.read('hour$i');
+      minute = data.read('minute$i');
       title = data.read('title$i')!;
       note = data.read('note$i')!;
       extime = data.read('ex_time$i');
@@ -119,37 +147,36 @@ void loadData(){
       switchEvening = data.read('evening$i')!;
       switchNight = data.read('night$i')!;
       switchAllday = data.read('allday$i')!;
+      if(hour != null) dateTime = new DateTime(year, month, day, hour, minute!);
+      else
+        if(switchAllday) dateTime = new DateTime(year, month, day, alldayEnd, 0);
+        else if(switchNight)
+          if(morningStart == 0) dateTime = new DateTime(year, month, day, 23, 59);
+          else if(eveningEnd == 0) dateTime = new DateTime(year, month, day + 1, morningStart, 0);
+          else dateTime = new DateTime(year, month, day, eveningEnd, 0);
+        else if(switchEvening) dateTime = new DateTime(year, month, day, eveningEnd, 0);
+        else if(switchAfternoon) dateTime = new DateTime(year, month, day, afternoonEnd, 0);
+        else dateTime = new DateTime(year, month, day, morningEnd, 0);
 
-      year = data.read('year$i');
-      month = data.read('month$i');
-      day = data.read('day$i');
-      hour = data.read('hour$i');
-      minute = data.read('minute$i');
+      if(DateTime.now().isAfter(dateTime)) data.write("active$i", false);
+      else val_rem++;
 
-      if (extime != 'Exact time') {
-        time = extime;
-      }
-      else {
-        if (switchMorning) time = 'Morning';
-        if (switchAfternoon)
-          if (time == '') time = 'Afternoon';
-          else time += ', Afternoon';
-        if (switchEvening)
-          if (time == '') time = 'Evening';
-          else time += ', Evening';
-        if (switchNight)
-          if (time == '') time = 'Night';
-          else time += ', Night';
-        if (switchAllday) time = 'All day';
-      }
-      arr.add(DataOfRem(del, act, title, note, date, time, extime,
+      timeString = timeToString(extime);
+      arr.add(DataOfRem(del, act, title, note, date, timeString, extime,
           switchMorning, switchAfternoon, switchEvening, switchNight, switchAllday, year, month, day, hour, minute)); //Записываем данные в массив
 
       if(!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime.now())){
-        indexes.add(i);
+        indexesForToday.add(i);
+      }
+      else if(!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1))){
+        indexesForTomorrow.add(i);
+      }
+      else if(!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 1))){
+        indexesForYesterday.add(i);
       }
     }
   }
+  sort();
   setVal(val_rem);
   year = month = day = 0;
   hour = minute =  null;
@@ -169,7 +196,6 @@ void loadData(){
 void getSettings(){
   if(data.read('enter') == null){
     night = 9;
-
     morningStart = 8;
     morningEnd = 12;
     afternoonEnd = 17;
@@ -179,39 +205,36 @@ void getSettings(){
   }
   else {
     night = data.read('night');
-
     morningStart = data.read('morning_start');
     morningEnd = data.read('morning_end');
     afternoonEnd = data.read('afternoon_end');
     eveningEnd = data.read('evening_end');
     alldayStart = data.read('allday_start');
     alldayEnd = data.read('allday_end');
-
   }
 }
 
 void minTime(){
 
-  if(switchMorning){time1 = morningStart;}
-  else if(switchAfternoon){time1 = morningEnd;}
-  else if(switchEvening){time1 = afternoonEnd;}
-  else if(switchNight){time1 = eveningEnd;}
-  else{time1 = 100;}
+  if(switchMorning) time1 = morningStart;
+  else if(switchAfternoon) time1 = morningEnd;
+  else if(switchEvening) time1 = afternoonEnd;
+  else if(switchNight) time1 = eveningEnd;
+  else time1 = 100;
 
-
-  if(switchMorning2){time2 = morningStart;}
-  else if(switchAfternoon2){time2 = morningEnd;}
-  else if(switchEvening2){time2 = afternoonEnd;}
-  else if(switchNight2){time2 = eveningEnd;}
-  else{time2 = 100;}
+  if(switchMorning2) time2 = morningStart;
+  else if(switchAfternoon2) time2 = morningEnd;
+  else if(switchEvening2) time2 = afternoonEnd;
+  else if(switchNight2) time2 = eveningEnd;
+  else time2 = 100;
 
 }
 
 void swap(int a, int b){
   int temp;
-  temp = indexes[a];
-  indexes[a] = indexes[b];
-  indexes[b] = temp;
+  temp = indexesForToday[a];
+  indexesForToday[a] = indexesForToday[b];
+  indexesForToday[b] = temp;
 }
 
 void sort(){
@@ -222,12 +245,12 @@ void sort(){
   int? minute2;
 
 
-  if(indexes.length > 1){
+  if(indexesForToday.length > 1){
     int index = 0;
     int index2 = 0;
 
-    for(int i = 0;  i < indexes.length - 1; i++){
-      index = indexes[i];
+    for(int i = 0;  i < indexesForToday.length - 1; i++){
+      index = indexesForToday[i];
 
       switchMorning = arr[index].morning;
       switchAfternoon = arr[index].afternoon;
@@ -235,8 +258,8 @@ void sort(){
       switchNight = arr[index].night;
       switchAllday = arr[index].allday;
 
-      for(int j = i + 1; j < indexes.length; j++){
-        index2 = indexes[j];
+      for(int j = i + 1; j < indexesForToday.length; j++){
+        index2 = indexesForToday[j];
 
         switchMorning2 = arr[index2].morning;
         switchAfternoon2 = arr[index2].afternoon;

@@ -25,6 +25,8 @@ var settingsPage = '/-/settings';
 
 int? numRemData;
 
+const int MAX = 5;
+
 
 void main() async {
   await GetStorage.init();
@@ -85,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void initState(){
     super.initState();
-    loadData();
+    loadStartData();
     getSettings();
   }
   @override

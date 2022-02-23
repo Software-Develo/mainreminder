@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:reminder/calendar_page.dart';
+import 'package:reminder/tomorrow_page.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 import 'func.dart';
 import 'main.dart';
 
-int year = 0, month = 0, day = 0;
-int? hour;
-int? minute;
+//int year = 0, month = 0, day = 0;
+//int? hour, minute;
 
 
 //bool active = false;
@@ -26,24 +26,26 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
 
   String date = 'Date', extime = 'Exact time', textTitle = '';
-  String? textNotes = '';
+  String textNotes = '', timeString = '';
 
   bool haveAptime = false, change = false, click = false, result = false;
   bool active = false, delete = false;
+
+  int year = 0, month = 0, day = 0;
+  int? hour, minute;
+
   DateTime dateTimeNow = DateTime.now(), dateTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    getRemData();
+    getRemData(numRemData);
     getVal();
-    getSettings();
+//    getSettings();
   }
 
 
-  void getRemData(){// Забираем данные
-    int? i = numRemData;
-
+  void getRemData(int? i){// Забираем данные
     switchMorning = switchAfternoon = switchEvening = switchNight = switchAllday = false;
 
     if(i != null) {
@@ -75,10 +77,15 @@ class _DetailsPageState extends State<DetailsPage> {
         val_rem = i;
       });
     }
-
     else if(createRemWithCalendar){
-      dateTime = new DateTime(year, month, day, dateTime.hour, dateTime.minute);
+      dateTime = new DateTime(yearForGet, monthForGet, dayForGet, dateTime.hour, dateTime.minute);
       date = DateFormat('dd/MM/yyyy').format(dateTime);
+      createRemWithCalendar = false;
+    }
+    else if(createWithTomorrowPage){
+      dateTime = new DateTime(dateTime.year, dateTime.month, dateTime.day + 1, dateTime.hour, dateTime.minute);
+      date = DateFormat('dd/MM/yyyy').format(dateTime);
+      createWithTomorrowPage = false;
     }
 
   }
@@ -111,6 +118,31 @@ class _DetailsPageState extends State<DetailsPage> {
     data.write('hour$i', hour);
     data.write('minute$i', minute);
 
+    timeString = timeToString(extime);
+    if(!change) {
+      arr.add(DataOfRem(delete, active, textTitle, textNotes, date, timeString, extime,
+          switchMorning, switchAfternoon, switchEvening, switchNight, switchAllday, year, month, day, hour, minute));
+
+      val_rem += 1;
+      setVal(val_rem);
+
+      if (!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime.now())) {
+        indexesForToday.add(i);
+      }
+      else if(!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1))){
+        indexesForTomorrow.add(i);
+      }
+      else if(!arr[i].delete! && arr[i].date == DateFormat('dd/MM/yyyy').format(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 1))){
+        indexesForYesterday.add(i);
+      }
+      freeIndexes.remove(i);
+
+    }
+    else{
+      arr[numRemData!] = DataOfRem(delete, active, textTitle, textNotes, date, timeString, extime,
+          switchMorning, switchAfternoon, switchEvening, switchNight, switchAllday, year, month, day, hour, minute);
+    }
+    sort();
   }
 
   checkTime(){
@@ -129,11 +161,11 @@ class _DetailsPageState extends State<DetailsPage> {
           if (eveningEnd != 24)
             if ((night == 1 && 60 - DateTime.now().minute >= 9) || night > 1) return true;
         }
-        if (switchAllday == true) return true;
+        if (switchAllday) return true;
         return false;
       }
     }
-    else return true;
+    else if(dateTime.difference(DateTime.now()).inDays < 0) return false;
   }
 
   @override
@@ -154,7 +186,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 leading: IconButton(
                   icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: purple),
                   onPressed: () {
-                    numRemData = null;
+//                    numRemData = null;
                     Navigator.pop(context);
                   },
                 ),
@@ -173,16 +205,16 @@ class _DetailsPageState extends State<DetailsPage> {
                           if (!haveAptime && extime == 'Exact time') buildAlertDialogAboutFields();// Если нет приблизительного и точного времени, то строим всплывающее окно
                           else {
                             if(!change) // Если это не изменение уже существующей напоминалки
-                              if (val_rem <= 5) // Если количество напоминаний меньше 5
+                              if (val_rem <= MAX) // Если количество напоминаний меньше 5
                                 if(checkTime()) {
                                   delete = false;
                                   active = true;
                                   setDetails(freeIndexes[0]);
                                   setVal(val_rem + 1);
 //                                  print("Details");
-                                  loadData();
+//                                  loadStartData();
                                   numRemData = null;
-                                  if(!itIsCalendarPage) Navigator.popAndPushNamed(context, homePage);
+                                  if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
                                   else{
                                     itIsCalendarPage = false;
                                     Navigator.popAndPushNamed(context, calendarPage);
@@ -193,7 +225,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             else
                               if(checkTime()){
                                 setDetails(numRemData!);
-                                loadData();
+//                                loadStartData();
                                 if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
                                 else Navigator.popAndPushNamed(context, calendarPage);
                               }
@@ -715,7 +747,7 @@ class _DetailsPageState extends State<DetailsPage> {
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Text('This is a free version'),
-          content: Text('You can create only 6 reminders. If you want to create a reminder, delete one'),
+          content: Text('You can create only $MAX reminders. If you want to create a reminder, delete one'),
           actions: <Widget>[
             CupertinoDialogAction(
               child: Text('Ok', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:reminder/func.dart';
 import 'package:sizer/sizer.dart';
-import 'package:get_storage/get_storage.dart';
 
 import 'main.dart';
 
@@ -83,6 +82,7 @@ class _SettingsPageState extends State<SettingsPage>{
                 //icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: Color.fromRGBO(255, 103, 104, 1)),
                 icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: purple),
                 onPressed: () {
+                  getSettings();
                   Navigator.pop(context);
                 },
               ),
@@ -150,18 +150,13 @@ class _SettingsPageState extends State<SettingsPage>{
                                               onChanged: (values){
                                                 setState(() {
                                                   distance = values.end - values.start;// The distance between two thumb
-
                                                   if (distance >= 3 && valuesAfternoon.end - valuesAfternoon.start >= 3) {
                                                     valuesMorning = values;
                                                     valuesNight = 24 - valuesEvening.end.toInt() + valuesMorning.start.toInt();
                                                     extra_second = RangeValues(valuesMorning.end, valuesAfternoon.end);// Checking the length of the future slider for the afternoon
-
-                                                    if(extra_second.end - extra_second.start >= 3) {// If distance between two thumb at least three
+                                                    if(extra_second.end - extra_second.start >= 3) // If distance between two thumb at least three
                                                       valuesAfternoon = RangeValues(valuesMorning.end, valuesAfternoon.end);
-                                                    }
-                                                    else{
-                                                      valuesMorning = RangeValues(valuesMorning.start, valuesAfternoon.start);
-                                                    }
+                                                    else valuesMorning = RangeValues(valuesMorning.start, valuesAfternoon.start);
                                                   }
                                                 });
                                               },
@@ -244,18 +239,13 @@ class _SettingsPageState extends State<SettingsPage>{
                                               onChanged: (values){
                                                 setState(() {
                                                   distance = values.end - values.start;
-
                                                   if (distance >= 3 && valuesAfternoon.end - valuesAfternoon.start >= 3) {
                                                     valuesEvening = values;
                                                     valuesNight = 24 - valuesEvening.end.toInt() + valuesMorning.start.toInt();
                                                     extra_first = RangeValues(valuesAfternoon.start, valuesEvening.start);
-                                                    if(extra_first.end - extra_first.start >= 3) {
+                                                    if(extra_first.end - extra_first.start >= 3)
                                                       valuesAfternoon = RangeValues(valuesAfternoon.start, valuesEvening.start);
-
-                                                    }
-                                                    else{
-                                                      valuesEvening = RangeValues(valuesAfternoon.end, valuesEvening.end);
-                                                    }
+                                                    else valuesEvening = RangeValues(valuesAfternoon.end, valuesEvening.end);
                                                   }
                                                 });
                                               },
@@ -291,11 +281,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                               onChanged: (values){
                                                 setState(() {
                                                   distance = values.end - values.start;// The distance between two thumb
-
-                                                  if (distance >= 10) {
-                                                    valuesAllday = values;
-
-                                                  }
+                                                  if (distance >= 10) valuesAllday = values;
                                                 });
                                               },
                                             ),

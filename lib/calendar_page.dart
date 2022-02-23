@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,8 +7,11 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 
-import 'details_page.dart';
 import 'main.dart';
+
+int yearForGet = 0;
+int monthForGet = 0;
+int dayForGet = 0;
 
 bool createRemWithCalendar = false;
 bool itIsCalendarPage = false;
@@ -23,9 +25,8 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-
-  Meeting? _selectedAppointment;
-  MeetingDataSource? events;
+  late String title;
+  late String note;
 
   String? _titleText = '',
       _noteText = '',
@@ -34,22 +35,26 @@ class _CalendarPageState extends State<CalendarPage> {
       _dateText = '',
       _timeDetails = '';
 
+  int value = arr.length;
+  int year = 0, month = 0, day = 0;
+  int? hour, minute;
+
+  Meeting? _selectedAppointment;
+  MeetingDataSource? events;
+
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now();
+
+//    int value = data.read('val')??0;
+
   @override
   void initState(){
     super.initState();
     events = _getDataSource();
   }
 
-
   MeetingDataSource _getDataSource() {
     final List<Meeting> meetings = <Meeting>[];
-
-    DateTime startTime = DateTime.now();
-    DateTime endTime = DateTime.now();
-    String title;
-    String note;
-//    int value = data.read('val')??0;
-    int value = arr.length;
 
     if(value != 0){
       for(int i = 0; i < value; i++) {
@@ -70,49 +75,41 @@ class _CalendarPageState extends State<CalendarPage> {
             if (switchMorning) {
               startTime = DateTime(year, month, day, morningStart, 0, 0);
               endTime = DateTime(year, month, day, morningEnd, 0, 0);
-              meetings.add(Meeting(
-                  i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
             }
             if (switchAfternoon) {
               startTime = DateTime(year, month, day, morningEnd, 0, 0);
               endTime = DateTime(year, month, day, afternoonEnd, 0, 0);
-              meetings.add(Meeting(
-                  i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
             }
             if (switchEvening) {
               startTime = DateTime(year, month, day, afternoonEnd, 0, 0);
               endTime = DateTime(year, month, day, eveningEnd, 0, 0);
-              meetings.add(Meeting(
-                  i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
             }
             if (switchNight) {
               if (morningStart == 0) {
                 startTime = DateTime(year, month, day, eveningEnd, 0, 0);
                 endTime = DateTime(year, month, day, 23, 59, 59);
-                meetings.add(Meeting(
-                    i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
               } else if (eveningEnd == 0) {
                 startTime = DateTime(year, month, day + 1, 0, 0, 0);
                 endTime = DateTime(year, month, day + 1, morningStart, 0, 0);
-                meetings.add(Meeting(
-                    i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
               } else {
                 startTime = DateTime(year, month, day, eveningEnd, 0, 0);
                 endTime = DateTime(year, month, day, 24, 0, 0);
-                meetings.add(Meeting(
-                    i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
 
                 startTime = DateTime(year, month, day + 1, 0, 0, 0);
                 endTime = DateTime(year, month, day + 1, morningStart, 0, 0);
-                meetings.add(Meeting(
-                    i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
               }
             }
             if (switchAllday) {
               startTime = DateTime(year, month, day, alldayStart, 0, 0);
               endTime = DateTime(year, month, day, alldayEnd, 0, 0);
-              meetings.add(Meeting(
-                  i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
             }
           } else {
             startTime = DateTime(year, month, day, hour!, minute!, 0);
@@ -269,18 +266,21 @@ class _CalendarPageState extends State<CalendarPage> {
   //Долгое нажатие на ячейку календаря
   void calendarLongPressed(CalendarLongPressDetails details){
 
-    year = details.date!.year;
-    month = details.date!.month;
-    day = details.date!.day;
+    yearForGet = details.date!.year;
+    monthForGet = details.date!.month;
+    dayForGet = details.date!.day;
+
 
     if(details.date!.difference(DateTime.now()).inDays >= 0) {
       itIsCalendarPage = true;
       createRemWithCalendar = true;
+      numRemData = null;
+
       Navigator.popAndPushNamed(context, detailsPage);
     } else {
-      year = 0;
-      month = 0;
-      day = 0;
+      yearForGet = 0;
+      monthForGet = 0;
+      dayForGet = 0;
     }
   }
 

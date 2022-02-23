@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:reminder/settings_page.dart';
 import 'package:sizer/sizer.dart';
 import 'main.dart';
@@ -41,13 +40,7 @@ class _HomePageState extends State<HomePage> {
   void initState(){
     super.initState();
     getVal();
-    sort();
-  }
-
-  void getVal() {
-    setState(() {
-      val_rem = data.read('val')??0;
-    });
+//    sort();
   }
 
   @override
@@ -88,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                 label: Text('Add Event'),
               ),
               body: ListView.builder(
-                  itemCount: indexes.length,
+                  itemCount: indexesForToday.length,
                   itemBuilder: (context, i){
                     return Column(
                       children: [
@@ -103,14 +96,14 @@ class _HomePageState extends State<HomePage> {
                                     icon: pict_reminder,
                                     onPressed: () {
                                       setState(() {
-                                        buildDialogAboutDelete(indexes[i]);
+                                        buildDialogAboutDelete(indexesForToday[i]);
                                       });
                                     },
                                   ),
                                 ),
                                 TextButton(
                                     onPressed: () {
-                                      numRemData = indexes[i];
+                                      numRemData = indexesForToday[i];
                                       Navigator.pushNamed(context, detailsPage);
                                     },
                                     child: Container(
@@ -120,17 +113,17 @@ class _HomePageState extends State<HomePage> {
                                             Container(
                                               width: 70.w,
                                               child: Text(
-                                                arr[i].title,
+                                                arr[indexesForToday[i]].title,
                                                 style: TextStyle(color: Colors.black54,fontSize: 14.sp),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
-                                            if(arr[i].note != '')
+                                            if(arr[indexesForToday[i]].note != '')
                                               Container(
                                                 width: 70.w,
                                                 child: Text(
-                                                  arr[i].note,
+                                                  arr[indexesForToday[i]].note,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(color: Colors.black26, fontSize: 12.sp),
                                                   maxLines: 2,
@@ -139,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                                             Container(
                                               width: 70.w,
                                               child: Text(
-                                                arr[i].date,
+                                                arr[indexesForToday[i]].date,
                                                 style: TextStyle(color: Colors.black26, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -147,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                                             Container(
                                               width: 70.w,
                                               child: Text(
-                                                arr[i].time,
+                                                arr[indexesForToday[i]].time,
                                                 style: TextStyle(color: Colors.black26, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
