@@ -5,6 +5,7 @@ import 'package:reminder/settings_page.dart';
 import 'package:sizer/sizer.dart';
 import 'func.dart';
 import 'main.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 bool createWithTomorrowPage = false;
 
@@ -44,7 +45,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
         builder: (context, orientation, deviceType) {
           return Scaffold(
               appBar: AppBar(
-                title: Text("Tasks for tomorrow", style: TextStyle(color: purple, fontSize: 18),),
+                title: Text(AppLocalizations.of(context)!.tomorrowTit, style: TextStyle(color: purple, fontSize: 18),),
                 centerTitle: true,
 
                 leading: IconButton(
@@ -67,6 +68,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                 onPressed: () {
                   setState(() {
                     numRemData = null;
+                    createWithTomorrowPage = true;
                   });
 
                   Navigator.pushNamed(context, detailsPage);
@@ -99,7 +101,6 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                 TextButton(
                                     onPressed: () {
                                       numRemData = indexesForTomorrow[i];
-                                      createWithTomorrowPage = true;
                                       Navigator.pushNamed(context, detailsPage);
                                     },
                                     child: Container(
@@ -175,7 +176,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                 deleteData(ind);
 
                 Navigator.pop(context);
-                Navigator.popAndPushNamed(context, homePage);
+                Navigator.popAndPushNamed(context, mainPage);
               },
             ),
             CupertinoDialogAction(

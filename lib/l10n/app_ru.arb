@@ -1,0 +1,31 @@
+{
+  "language": "Русский",
+  "todayTit": "Сегодняшние задачи",
+  "tomorrowTit": "Завтрашние задачи",
+  "yesterdayTit": "Вчерашние задачи",
+  "settingsTit": "Настройки",
+  "calendarTit": "Календарь",
+  "detailsTit": "Детали",
+
+
+  "today": "Сегодня",
+  "tomorrow": "Завтра",
+  "yesterday": "Вчера",
+
+
+  "morning": "Утро",
+  "afternoon": "День",
+  "evening": "Вечер",
+  "allday": "Целый день",
+  "night": "Ночь",
+
+  "save": "Сохранить",
+
+  "addevent": "Добавить",
+
+  "title": "Название",
+  "note": "Заметка",
+  "date": "Дата",
+  "exacttime": "Точное время",
+  "approxtime": "Примерное время"
+}

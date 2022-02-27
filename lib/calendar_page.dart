@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -142,7 +141,8 @@ class _CalendarPageState extends State<CalendarPage> {
       showModalBottomSheet(
           context: context,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30)
+            //borderRadius: BorderRadius.circular(30)
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
           ),
           builder: (context) {
             return Column(

@@ -1,0 +1,31 @@
+{
+  "language": "Español",
+  "todayTit": "Tareas para hoy",
+  "tomorrowTit": "Tareas para mañana",
+  "yesterdayTit": "Tareas para ayer",
+  "settingsTit": "Ajustes",
+  "calendarTit": "Calendario",
+  "detailsTit": "Detalles",
+
+
+  "today": "Hoy",
+  "tomorrow": "Mañana",
+  "yesterday": "Ayer",
+
+
+  "morning": "Mañana",
+  "afternoon": "Día",
+  "evening": "Noche",
+  "allday": "Todo el día",
+  "night": "Nochet",
+
+  "save": "Guardar",
+
+  "addevent": "Agregar",
+
+  "title": "Nombre",
+  "note": "Nota",
+  "date": "Fecha",
+  "exacttime": "Hora exacta",
+  "approxtime": "Tiempo aproximado"
+}

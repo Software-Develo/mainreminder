@@ -77,14 +77,13 @@ class _DetailsPageState extends State<DetailsPage> {
         val_rem = i;
       });
     }
-    else if(createRemWithCalendar){
+    if(createRemWithCalendar){
       dateTime = new DateTime(yearForGet, monthForGet, dayForGet, dateTime.hour, dateTime.minute);
       date = DateFormat('dd/MM/yyyy').format(dateTime);
       createRemWithCalendar = false;
     }
-    else if(createWithTomorrowPage){
+    if(createWithTomorrowPage){
       dateTime = new DateTime(dateTime.year, dateTime.month, dateTime.day + 1, dateTime.hour, dateTime.minute);
-      date = DateFormat('dd/MM/yyyy').format(dateTime);
       createWithTomorrowPage = false;
     }
 
@@ -166,6 +165,7 @@ class _DetailsPageState extends State<DetailsPage> {
       }
     }
     else if(dateTime.difference(DateTime.now()).inDays < 0) return false;
+    return true;
   }
 
   @override

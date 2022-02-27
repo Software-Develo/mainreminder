@@ -9,6 +9,10 @@ import 'package:reminder/yesterday_page.dart';
 import 'package:sizer/sizer.dart';
 import 'package:get_storage/get_storage.dart';
 import 'details_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'l10n/l10n.dart';
 
 Color purple = Color.fromRGBO(150, 50, 240, 1);
 Color gray = CupertinoColors.extraLightBackgroundGray;
@@ -35,13 +39,14 @@ void main() async {
 
 
 class MyApp extends StatelessWidget {
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      //title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -54,10 +59,11 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Tasks for today'),
+
+      //home: MyHomePage(title: AppLocalizations.of(context)!.todayTit),
       initialRoute: mainPage,
       routes: {
-        mainPage: (context) => MyHomePage(title: 'Tasks for today'),
+        mainPage: (context) => MyHomePage(title: AppLocalizations.of(context)!.todayTit),
         homePage: (context) => HomePage(),
         yesterdayPage: (context) => YesterdayPage(),
         tomorrowPage: (context) => TomorrowPage(),
@@ -65,6 +71,7 @@ class MyApp extends StatelessWidget {
         calendarPage: (context) => CalendarPage(),
         settingsPage: (context) => SettingsPage()
       },
+
     );
   }
 }
@@ -78,6 +85,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
   var currentIndex = 1;
   final screen = [
     YesterdayPage(),
@@ -123,15 +132,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 items: [
                   BottomNavigationBarItem(
                       icon: Icon(Icons.navigate_before_outlined),
-                      label: 'Yesterday',
+                      label: AppLocalizations.of(context)!.yesterday,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    label: 'Today',
+                    label: AppLocalizations.of(context)!.today,
                   ),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.navigate_next_outlined),
-                      label: 'Tomorrow',
+                      label: AppLocalizations.of(context)!.tomorrow,
                   ),
                 ],
               ),

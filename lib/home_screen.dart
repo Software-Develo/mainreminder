@@ -5,6 +5,8 @@ import 'package:reminder/settings_page.dart';
 import 'package:sizer/sizer.dart';
 import 'main.dart';
 import 'func.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 //List<bool> unfinished = [];
 //List<String> titles = [];
@@ -49,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context, orientation, deviceType) {
           return Scaffold(
               appBar: AppBar(
-                title: Text("Tasks for today", style: TextStyle(color: purple, fontSize: 18),),
+                title: Text(AppLocalizations.of(context)!.todayTit, style: TextStyle(color: purple, fontSize: 18),),
                 centerTitle: true,
 
                 leading: IconButton(
@@ -179,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                 deleteData(ind);
 
                 Navigator.pop(context);
-                Navigator.popAndPushNamed(context, homePage);
+                Navigator.popAndPushNamed(context, mainPage);
               },
             ),
             CupertinoDialogAction(

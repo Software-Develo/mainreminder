@@ -42,7 +42,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
         builder: (context, orientation, deviceType) {
           return Scaffold(
               appBar: AppBar(
-                title: Text("Tasks for tomorrow", style: TextStyle(color: purple, fontSize: 18),),
+                title: Text("Tasks for yesterday", style: TextStyle(color: purple, fontSize: 18),),
                 centerTitle: true,
 
                 leading: IconButton(
@@ -172,7 +172,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                 deleteData(ind);
 
                 Navigator.pop(context);
-                Navigator.popAndPushNamed(context, homePage);
+                Navigator.popAndPushNamed(context, mainPage);
               },
             ),
             CupertinoDialogAction(
