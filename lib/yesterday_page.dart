@@ -5,6 +5,7 @@ import 'package:reminder/settings_page.dart';
 import 'package:sizer/sizer.dart';
 import 'func.dart';
 import 'main.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class YesterdayPage extends StatefulWidget {
   YesterdayPage({Key? key}) : super(key: key);
@@ -18,11 +19,12 @@ class _YesterdayPageState extends State<YesterdayPage> {
 
   int i = 0, j = 0;
 
-  String time = '';
-  String title = '';
-  String note = '';
-  String date = '';
-  String extime = '';
+  late String title;
+  late String addevent;
+  late String ddo;
+  late String ddt;
+  late String delete;
+  late String cancel;
 
   DateTime dateTime1 = DateTime.now();
   DateTime dateTime2 = DateTime.now();
@@ -37,29 +39,41 @@ class _YesterdayPageState extends State<YesterdayPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    title = AppLocalizations.of(context)!.yesterdayTit;
+    addevent = AppLocalizations.of(context)!.addevent;
+    ddo = AppLocalizations.of(context)!.ddo;
+    ddt = AppLocalizations.of(context)!.ddt;
+    delete = AppLocalizations.of(context)!.delete;
+    cancel = AppLocalizations.of(context)!.cancel;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
+            backgroundColor: dark,
               appBar: AppBar(
-                title: Text("Tasks for yesterday", style: TextStyle(color: purple, fontSize: 18),),
+                title: Text(title, style: TextStyle(color: white, fontSize: 18),),
                 centerTitle: true,
 
                 leading: IconButton(
-                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: purple),
+                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: white),
                   onPressed: () {
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage()));
+                    Navigator.pushNamed(context, settingsPage);
                   },
                 ),
                 actions: [
                   IconButton(
-                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: purple),
+                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: white),
                     onPressed: () {
                       Navigator.pushNamed(context, calendarPage);
                     },
                   )
                 ],
-                backgroundColor: Colors.white,
+                backgroundColor: darkpurple,
               ),
               floatingActionButton: FloatingActionButton.extended(
                 onPressed: () {
@@ -69,9 +83,9 @@ class _YesterdayPageState extends State<YesterdayPage> {
 
                   Navigator.pushNamed(context, detailsPage);
                 },
-                backgroundColor: purple,
-                icon: Icon(Icons.add),
-                label: Text('Add Event'),
+                backgroundColor: lightdark,
+                icon: Icon(Icons.add, color: lightpurple),
+                label: Text(addevent),
               ),
               body: ListView.builder(
                   itemCount: indexesForYesterday.length,
@@ -86,7 +100,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                 Container(
                                   width: 10.w,
                                   child: IconButton(
-                                    icon: pict_reminder,
+                                    icon: SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: white),
                                     onPressed: () {
                                       setState(() {
                                         buildDialogAboutDelete(indexesForYesterday[i]);
@@ -107,7 +121,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForYesterday[i]].title,
-                                                style: TextStyle(color: Colors.black54,fontSize: 14.sp),
+                                                style: TextStyle(color: white,fontSize: 14.sp),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -118,7 +132,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                                 child: Text(
                                                   arr[indexesForYesterday[i]].note,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                  style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                   maxLines: 2,
                                                 ),
                                               ),
@@ -126,7 +140,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForYesterday[i]].date,
-                                                style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
@@ -134,7 +148,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForYesterday[i]].time,
-                                                style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
@@ -162,27 +176,31 @@ class _YesterdayPageState extends State<YesterdayPage> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text('Removing reminders'),
-          content: Text('Are you sure you want to delete the reminder?'),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: Text('Delete', style: TextStyle(color: Colors.red),),
-              onPressed: () {
-                deleteData(ind);
+        return Theme(
+          data: ThemeData.dark(),
+          child: CupertinoAlertDialog(
+            title: Text(ddo),
+            content: Text(ddt),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(delete, style: TextStyle(color: Colors.red),),
+                onPressed: () {
+                  deleteData(ind);
 
-                Navigator.pop(context);
-                Navigator.popAndPushNamed(context, mainPage);
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text('Cancel', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+                  Navigator.pop(context);
+                  Navigator.popAndPushNamed(context, mainPage);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text(cancel, style: TextStyle(color: lightpurple),),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         );
+
       },
     );
   }

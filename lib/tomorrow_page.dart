@@ -21,16 +21,17 @@ class _TomorrowPageState extends State<TomorrowPage> {
 
   int i = 0, j = 0;
 
-  String time = '';
-  String title = '';
-  String note = '';
-  String date = '';
-  String extime = '';
+  late String title;
+  late String addevent;
+  late String ddo;
+  late String ddt;
+  late String delete;
+  late String cancel;
 
   DateTime dateTime1 = DateTime.now();
   DateTime dateTime2 = DateTime.now();
 
-  SvgPicture pict_reminder = SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: purple);
+//  SvgPicture pict_reminder = SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: purple);
 
   @override
   void initState(){
@@ -38,31 +39,42 @@ class _TomorrowPageState extends State<TomorrowPage> {
     getVal();
 //    sort();
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    title = AppLocalizations.of(context)!.tomorrowTit;
+    addevent = AppLocalizations.of(context)!.addevent;
+    ddo = AppLocalizations.of(context)!.ddo;
+    ddt = AppLocalizations.of(context)!.ddt;
+    delete = AppLocalizations.of(context)!.delete;
+    cancel = AppLocalizations.of(context)!.cancel;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
+            backgroundColor: dark,
               appBar: AppBar(
-                title: Text(AppLocalizations.of(context)!.tomorrowTit, style: TextStyle(color: purple, fontSize: 18),),
+                title: Text(title, style: TextStyle(color: white, fontSize: 18),),
                 centerTitle: true,
 
                 leading: IconButton(
-                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: purple),
+                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: white),
                   onPressed: () {
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage()));
+                    Navigator.pushNamed(context, settingsPage);
                   },
                 ),
                 actions: [
                   IconButton(
-                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: purple),
+                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: white),
                     onPressed: () {
                       Navigator.pushNamed(context, calendarPage);
                     },
                   )
                 ],
-                backgroundColor: Colors.white,
+                backgroundColor: darkpurple,
               ),
               floatingActionButton: FloatingActionButton.extended(
                 onPressed: () {
@@ -73,9 +85,9 @@ class _TomorrowPageState extends State<TomorrowPage> {
 
                   Navigator.pushNamed(context, detailsPage);
                 },
-                backgroundColor: purple,
-                icon: Icon(Icons.add),
-                label: Text('Add Event'),
+                backgroundColor: lightdark,
+                icon: Icon(Icons.add, color: lightpurple,),
+                label: Text(addevent),
               ),
               body: ListView.builder(
                   itemCount: indexesForTomorrow.length,
@@ -90,7 +102,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                 Container(
                                   width: 10.w,
                                   child: IconButton(
-                                    icon: pict_reminder,
+                                    icon: SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: white),
                                     onPressed: () {
                                       setState(() {
                                         buildDialogAboutDelete(indexesForTomorrow[i]);
@@ -111,7 +123,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForTomorrow[i]].title,
-                                                style: TextStyle(color: Colors.black54,fontSize: 14.sp),
+                                                style: TextStyle(color: white,fontSize: 14.sp),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -122,7 +134,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                                 child: Text(
                                                   arr[indexesForTomorrow[i]].note,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                  style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                   maxLines: 2,
                                                 ),
                                               ),
@@ -130,7 +142,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForTomorrow[i]].date,
-                                                style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
@@ -138,7 +150,7 @@ class _TomorrowPageState extends State<TomorrowPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForTomorrow[i]].time,
-                                                style: TextStyle(color: Colors.black26, fontSize: 12.sp),
+                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
@@ -166,27 +178,31 @@ class _TomorrowPageState extends State<TomorrowPage> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text('Removing reminders'),
-          content: Text('Are you sure you want to delete the reminder?'),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: Text('Delete', style: TextStyle(color: Colors.red),),
-              onPressed: () {
-                deleteData(ind);
+        return Theme(
+          data: ThemeData.dark(),
+          child: CupertinoAlertDialog(
+            title: Text(ddo),
+            content: Text(ddt),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(delete, style: TextStyle(color: Colors.red),),
+                onPressed: () {
+                  deleteData(ind);
 
-                Navigator.pop(context);
-                Navigator.popAndPushNamed(context, mainPage);
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text('Cancel', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+                  Navigator.pop(context);
+                  Navigator.popAndPushNamed(context, mainPage);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text(cancel, style: TextStyle(color: lightpurple),),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         );
+
       },
     );
   }

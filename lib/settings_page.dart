@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:reminder/func.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'main.dart';
 
 class SettingsPage extends StatefulWidget{
@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage>{
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                "Settings",
+                AppLocalizations.of(context)!.settingsTit,
                 style: TextStyle(
                     color: purple,
                     fontSize: 18
@@ -83,13 +83,13 @@ class _SettingsPageState extends State<SettingsPage>{
                 icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: purple),
                 onPressed: () {
                   getSettings();
-                  Navigator.pop(context);
+                  Navigator.popAndPushNamed(context, mainPage);
                 },
               ),
               actions: [
                   CupertinoButton(
                       child: Text(
-                        'Save',
+                        AppLocalizations.of(context)!.save,
                         style: TextStyle(color: purple),
                       ),
                       onPressed: () {
@@ -126,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                         height: 50,
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Morning',
+                                          AppLocalizations.of(context)!.morning,
                                           style: TextStyle(color: purple, fontSize: 13.sp),
                                         ),
                                       ),
@@ -168,7 +168,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                         height: 50,
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Afternoon',
+                                          AppLocalizations.of(context)!.afternoon,
                                           style: TextStyle(color: purple, fontSize: 13.sp),
                                         ),
                                       ),
@@ -215,7 +215,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                         height: 50,
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Evening',
+                                          AppLocalizations.of(context)!.evening,
                                           style: TextStyle(color: purple, fontSize: 13.sp),
                                         ),
                                       ),
@@ -257,7 +257,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                         height: 50,
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'All day',
+                                          AppLocalizations.of(context)!.allday,
                                           style: TextStyle(color: purple, fontSize: 13.sp),
                                         ),
                                       ),
@@ -298,7 +298,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                               width: 60.w,
                                               height: 50,
                                               child: Text(
-                                                'Night',
+                                                AppLocalizations.of(context)!.night,
                                                 style: TextStyle(color: purple, fontSize: 13.sp),
                                               ),
                                             ),
@@ -349,11 +349,11 @@ class _SettingsPageState extends State<SettingsPage>{
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text("The timing isn't right"),
-          content: Text('The minimum duration of the night is 3 hours'),
+          title: Text(AppLocalizations.of(context)!.dno),
+          content: Text(AppLocalizations.of(context)!.dnt),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: Text('Ok', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
+              child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
               onPressed: () { Navigator.of(context).pop();},
             ),
           ],

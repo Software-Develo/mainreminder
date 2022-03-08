@@ -27,5 +27,18 @@
   "note": "Nota",
   "date": "Fecha",
   "exacttime": "Hora exacta",
-  "approxtime": "Tiempo aproximado"
+  "approxtime": "Tiempo aproximado",
+
+  "ddo": "Eliminar recordatorios",
+  "ddt": "¿Está seguro de que desea eliminar el resto?",
+  "dfo": "Estos campos deben rellenarse",
+  "dto": "El momento no es el adecuado",
+  "dtt": "El intervalo entre la hora que ha elegido y la hora en el momento debe ser de al menos 10 minutos",
+  "dro": "Esta es una versión gratuita",
+  "drt": "Solo puedes crear 6 recordatorios. Si desea crear un recordatorio, elimine uno",
+  "dno": "El tiempo dado es incorrecto",
+  "dnt": "Duración mínima de la noche 3 horas",
+  "delete": "Eliminar",
+  "cancel": "Cancelar",
+  "ok": "Ok"
 }

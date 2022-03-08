@@ -27,5 +27,18 @@
   "note": "Note",
   "date": "Date",
   "exacttime": "Exact time",
-  "approxtime": "Approximate time"
+  "approxtime": "Approximate time",
+
+  "ddo": "Removing reminders",
+  "ddt": "Are you sure you want to delete the reminder?",
+  "dfo": "These fields must be filled in",
+  "dto": "The timing isn't right",
+  "dtt": "The interval between the time you have chosen and the time at the moment should be at least 10 minutes",
+  "dro": "This is a free version",
+  "drt": "You can create only 6 reminders. If you want to create a reminder, delete one",
+  "dno": "The timing isn't right",
+  "dnt": "The minimum duration of the night is 3 hours",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "ok": "Ok"
 }

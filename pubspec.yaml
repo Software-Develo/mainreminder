@@ -26,6 +26,7 @@ dependencies:
   flutter_localizations: # Add this line
     sdk: flutter         # Add this line
 
+  syncfusion_localizations: ^19.4.54
   flutter_svg: 1.0.0
   sizer: ^2.0.13
   intl: ^0.17.0

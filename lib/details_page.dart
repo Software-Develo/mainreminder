@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'func.dart';
 import 'main.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+
 //int year = 0, month = 0, day = 0;
 //int? hour, minute;
 
@@ -25,7 +27,7 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
 
-  String date = 'Date', extime = 'Exact time', textTitle = '';
+  String date = '', extime = '', textTitle = '';
   String textNotes = '', timeString = '';
 
   bool haveAptime = false, change = false, click = false, result = false;
@@ -39,9 +41,55 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    getRemData(numRemData);
     getVal();
 //    getSettings();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    date = AppLocalizations.of(context)!.date;
+    extime = AppLocalizations.of(context)!.exacttime;
+    getRemData(numRemData);
+
+  }
+
+  void saveRem(){
+    if (switchMorning || switchAfternoon ||
+        switchEvening || switchNight ||
+        switchAllday) haveAptime = true;// Если есть приблизительное время
+
+    if(textTitle != '' && date != AppLocalizations.of(context)!.date) {// Если есть название и дата
+      if (!haveAptime && extime == AppLocalizations.of(context)!.exacttime) buildAlertDialogAboutFields();// Если нет приблизительного и точного времени, то строим всплывающее окно
+      else {
+        if(!change) // Если это не изменение уже существующей напоминалки
+          if (val_rem <= MAX) // Если количество напоминаний меньше 5
+            if(checkTime()) {
+              delete = false;
+              active = true;
+              setDetails(freeIndexes[0]);
+              setVal(val_rem + 1);
+//                                  print("Details");
+//                                  loadStartData();
+              numRemData = null;
+              if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
+              else{
+                itIsCalendarPage = false;
+                Navigator.popAndPushNamed(context, calendarPage);
+              }
+            }
+            else buildAlertDialogAboutTime();
+          else buildAlertDialogReminder();
+        else
+        if(checkTime()){
+          setDetails(numRemData!);
+//                                loadStartData();
+          if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
+          else Navigator.popAndPushNamed(context, calendarPage);
+        }
+        else buildAlertDialogAboutTime();
+      }
+    }
+    else buildAlertDialogAboutFields();
   }
 
 
@@ -66,7 +114,7 @@ class _DetailsPageState extends State<DetailsPage> {
         day = arr[i].day;
         hour = arr[i].hour;
         minute = arr[i].minute;
-        if (extime != 'Exact time') {
+        if (extime != AppLocalizations.of(context)!.exacttime) {
 //          print("enter");
           dateTime = new DateTime(year, month, day, hour!, minute!);
 //          print(dateTime);
@@ -90,7 +138,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void setDetails(int i) {// Сохраняем данные
-    if(extime == 'Exact time') hour = minute = null;
+    if(extime == AppLocalizations.of(context)!.exacttime) hour = minute = null;
     else{
       hour = dateTime.hour;
       minute = dateTime.minute;
@@ -117,7 +165,7 @@ class _DetailsPageState extends State<DetailsPage> {
     data.write('hour$i', hour);
     data.write('minute$i', minute);
 
-    timeString = timeToString(extime);
+    timeString = timeToString(extime, context);
     if(!change) {
       arr.add(DataOfRem(delete, active, textTitle, textNotes, date, timeString, extime,
           switchMorning, switchAfternoon, switchEvening, switchNight, switchAllday, year, month, day, hour, minute));
@@ -146,7 +194,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
   checkTime(){
     if(date == DateFormat('dd/MM/yyyy').format(DateTime.now())) {
-      if (extime != 'Exact time')
+      if (extime != AppLocalizations.of(context)!.exacttime)
         if (dateTime.difference(DateTime.now()).inHours >= 0 && dateTime.difference(DateTime.now()).inMinutes >= 10) return true;
         else return false;
       else {
@@ -173,70 +221,36 @@ class _DetailsPageState extends State<DetailsPage> {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
+            backgroundColor: dark,
               appBar: AppBar(
                 title: Text(
-                  "Details",
+                  AppLocalizations.of(context)!.detailsTit,
                   style: TextStyle(
-                      color: Color.fromRGBO(150, 50, 240, 1),
+                      color: white,
                       fontSize: 18
                   ),
                 ),
                 centerTitle: true,
 
                 leading: IconButton(
-                  icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: purple),
+                  icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: white),
                   onPressed: () {
 //                    numRemData = null;
-                    Navigator.pop(context);
+                    Navigator.popAndPushNamed(context, mainPage);
                   },
                 ),
                 actions: [
                   CupertinoButton(
                     child: Text(
-                      'Save',
-                      style: TextStyle(color: purple),
+                      AppLocalizations.of(context)!.save,
+                      style: TextStyle(color: white),
                     ),
                     onPressed: () {
-                        if (switchMorning || switchAfternoon ||
-                          switchEvening || switchNight ||
-                          switchAllday) haveAptime = true;// Если есть приблизительное время
-
-                        if(textTitle != '' && date != 'Date') {// Если есть название и дата
-                          if (!haveAptime && extime == 'Exact time') buildAlertDialogAboutFields();// Если нет приблизительного и точного времени, то строим всплывающее окно
-                          else {
-                            if(!change) // Если это не изменение уже существующей напоминалки
-                              if (val_rem <= MAX) // Если количество напоминаний меньше 5
-                                if(checkTime()) {
-                                  delete = false;
-                                  active = true;
-                                  setDetails(freeIndexes[0]);
-                                  setVal(val_rem + 1);
-//                                  print("Details");
-//                                  loadStartData();
-                                  numRemData = null;
-                                  if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
-                                  else{
-                                    itIsCalendarPage = false;
-                                    Navigator.popAndPushNamed(context, calendarPage);
-                                  }
-                                }
-                                else buildAlertDialogAboutTime();
-                              else buildAlertDialogReminder();
-                            else
-                              if(checkTime()){
-                                setDetails(numRemData!);
-//                                loadStartData();
-                                if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
-                                else Navigator.popAndPushNamed(context, calendarPage);
-                              }
-                              else buildAlertDialogAboutTime();
-                          }
-                        }
-                        else buildAlertDialogAboutFields();
+                        saveRem();
                     }
                   )
                 ],
-                backgroundColor: Colors.white,
+                backgroundColor: darkpurple,
               ),
               body:
               ListView(
@@ -252,12 +266,13 @@ class _DetailsPageState extends State<DetailsPage> {
                               height: 60,
                               margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               foregroundDecoration: BoxDecoration(
-                                border: Border.all(color: purple, width: 1),
+                                border: Border.all(color: dark, width: 1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child:
                               TextFormField(
                                 initialValue: textTitle,
+                                style: TextStyle(color: graywhite),
                                 keyboardType: TextInputType.text,
                                 maxLines: 1,
                                 maxLength: 50,
@@ -265,17 +280,18 @@ class _DetailsPageState extends State<DetailsPage> {
                                 decoration: InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide(color: purple)
+                                        //borderSide: BorderSide(color: lightdark)
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide(color: purple)
+                                        //borderSide: BorderSide(color: lightdark)
                                     ),
-                                    fillColor: gray,
+                                    fillColor: lightdark,
                                     filled: true,
                                     counterText: "",
                                     contentPadding: EdgeInsets.all(20),
-                                    hintText: "Title"
+                                    hintText: AppLocalizations.of(context)!.title,
+                                    hintStyle: TextStyle(color: gray)
                                 ),
                                 onChanged: (text) {textTitle = text;},
                               )
@@ -285,11 +301,12 @@ class _DetailsPageState extends State<DetailsPage> {
                             width: 90.w,
                             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                             foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: purple, width: 1),
+                              border: Border.all(color: dark, width: 1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: TextFormField(
                               initialValue: textNotes,
+                              style: TextStyle(color: graywhite),
                               keyboardType: TextInputType.text,
                               cursorColor: purple,
                               maxLines: 4,
@@ -297,17 +314,18 @@ class _DetailsPageState extends State<DetailsPage> {
                               decoration: InputDecoration(
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(color: purple)
+                                    //borderSide: BorderSide(color: lightdark)
                                 ),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(color: purple)
+                                    //borderSide: BorderSide(color: lightdark)
                                 ),
-                                fillColor: gray,
+                                fillColor: lightdark,
                                 filled: true,
                                 counterText: "",
                                 contentPadding: EdgeInsets.all(20),
-                                hintText: "Notes",
+                                  hintText: AppLocalizations.of(context)!.note,
+                                  hintStyle: TextStyle(color: gray)
                               ),
                               onChanged: (text){ textNotes = text;},
                             ),
@@ -318,23 +336,23 @@ class _DetailsPageState extends State<DetailsPage> {
                             height: 60,
                             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                             foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: purple, width: 1),
+                              border: Border.all(color: dark, width: 1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: gray,
+                              color: lightdark,
                             ),
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 textStyle: TextStyle(fontSize: 13.sp),
-                                shadowColor: gray,
-                                primary: gray
+                                shadowColor: lightdark,
+                                primary: lightdark
                               ),
                               child:Row(
                                 children: [
                                   SizedBox(width: 3.w,),
-                                  SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: purple,),
+                                  SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: lightpurple,),
                                   SizedBox(width: 1.w,),
                                   Container(
                                     alignment: Alignment.centerLeft,
@@ -342,7 +360,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                     height: 60,
                                     child: Text(
                                       date,
-                                      style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                      style: TextStyle(color: gray, fontSize: 13.sp),
                                     ),
                                   ),
                                 ],
@@ -355,7 +373,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       buildDatePicker()
                                     ],
                                     cancelButton: CupertinoActionSheetAction(
-                                      child: Text('Done'),
+                                      child: Text(AppLocalizations.of(context)!.ok),
                                       onPressed: () {
                                         setState(() {
                                           date = DateFormat('dd/MM/yyyy').format(dateTime);
@@ -374,12 +392,12 @@ class _DetailsPageState extends State<DetailsPage> {
                             height: 60,
                             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                             foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: purple, width: 1),
+                              border: Border.all(color: dark, width: 1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: gray,
+                              color: lightdark,
                             ),
                             child: TextButton(
                                 style: TextButton.styleFrom(
@@ -390,7 +408,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 child:Row(
                                   children: [
                                     SizedBox(width: 3.w,),
-                                    SvgPicture.asset('assets/time.svg', height: 30, width: 30,color: purple,),
+                                    SvgPicture.asset('assets/time.svg', height: 30, width: 30,color: lightpurple,),
                                     SizedBox(width: 1.w,),
                                     Container(
                                       alignment: Alignment.centerLeft,
@@ -398,7 +416,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       height: 60,
                                       child: Text(
                                         extime,
-                                        style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                        style: TextStyle(color: gray, fontSize: 13.sp),
                                       ),
                                     ),
                                   ],
@@ -411,7 +429,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                         buildTimePicker()
                                       ],
                                       cancelButton: CupertinoActionSheetAction(
-                                        child: Text('Done'),
+                                        child: Text(AppLocalizations.of(context)!.ok),
                                         onPressed: () {
                                           setState(() {
                                             extime = DateFormat('HH:mm').format(dateTime);
@@ -437,27 +455,27 @@ class _DetailsPageState extends State<DetailsPage> {
                               height: 365,
                               margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               foregroundDecoration: BoxDecoration(
-                                border: Border.all(color: purple, width: 1),
+                                border: Border.all(color: dark, width: 1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: gray,
+                                color: lightdark,
                               ),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
                                       SizedBox( width: 5.w,),
-                                      SvgPicture.asset('assets/time.svg', height: 30, width: 30,color: purple,),
+                                      SvgPicture.asset('assets/time.svg', height: 30, width: 30,color: lightpurple,),
                                       SizedBox( width: 2,),
                                       Container(
                                         alignment: Alignment.centerLeft,
                                         width: 60.w,
                                         height: 60,
                                         child: Text(
-                                          'Approximate time',
-                                          style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                          AppLocalizations.of(context)!.approxtime,
+                                          style: TextStyle(color: gray, fontSize: 13.sp),
                                         ),
                                       ),
                                     ],
@@ -475,8 +493,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                                 width: 100,
                                                 height: 25,
                                                 child: Text(
-                                                  'Morning',
-                                                  style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                                  AppLocalizations.of(context)!.morning,
+                                                  style: TextStyle(color: gray, fontSize: 13.sp),
                                                 ),
                                               ),
                                             ],
@@ -494,10 +512,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                                 setState(() {
                                                   switchAllday = false;
 
-                                                  extime = 'Exact time';
+                                                  extime = AppLocalizations.of(context)!.exacttime;
                                                 });
                                           },
-                                          activeColor: purple,
+                                          activeColor: lightpurple,
                                         ),
                                       ),
                                       SizedBox( width: 3.w,)
@@ -516,8 +534,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                             width: 100,
                                             height: 25,
                                             child: Text(
-                                              'Afternoon',
-                                              style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                              AppLocalizations.of(context)!.afternoon,
+                                              style: TextStyle(color: gray, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -534,10 +552,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                         if(switchAfternoon == true)
                                           setState(() {
                                             switchAllday = false;
-                                            extime = 'Exact time';
+                                            extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: purple,
+                                      activeColor: lightpurple,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -556,8 +574,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                             width: 100,
                                             height: 25,
                                             child: Text(
-                                              'Evening',
-                                              style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                              AppLocalizations.of(context)!.evening,
+                                              style: TextStyle(color: gray, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -574,10 +592,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                         if(switchEvening == true)
                                           setState(() {
                                             switchAllday = false;
-                                            extime = 'Exact time';
+                                            extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: purple,
+                                      activeColor: lightpurple,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -596,8 +614,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                             width: 100,
                                             height: 25,
                                             child: Text(
-                                              'Night',
-                                              style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                              AppLocalizations.of(context)!.night,
+                                              style: TextStyle(color: gray, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -614,10 +632,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                         if(switchNight == true)
                                           setState(() {
                                             switchAllday = false;
-                                            extime = 'Exact time';
+                                            extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: purple,
+                                      activeColor: lightpurple,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -636,8 +654,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                             width: 100,
                                             height: 25,
                                             child: Text(
-                                              'All day',
-                                              style: TextStyle(color: Color.fromRGBO(102, 97, 97, 1.0), fontSize: 13.sp),
+                                              AppLocalizations.of(context)!.allday,
+                                              style: TextStyle(color: gray, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -657,10 +675,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                             switchAfternoon = false;
                                             switchEvening = false;
                                             switchNight = false;
-                                            extime = 'Exact time';
+                                            extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: purple,
+                                      activeColor: lightpurple,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,),
@@ -708,11 +726,11 @@ class _DetailsPageState extends State<DetailsPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text('These fields must be filled in'),
-          content: Text('"Title", "Date", "Exact time" or "Approximate time"'),
+          title: Text(AppLocalizations.of(context)!.dfo),
+          content: Text('${AppLocalizations.of(context)!.title}, ${AppLocalizations.of(context)!.date}, ${AppLocalizations.of(context)!.exacttime} or ${AppLocalizations.of(context)!.approxtime}'),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: Text('Ok', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
+              child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
               onPressed: () { Navigator.of(context).pop();},
             ),
           ],
@@ -727,11 +745,11 @@ class _DetailsPageState extends State<DetailsPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text("The timing isn't right"),
-          content: Text('The interval between the time you have chosen and the time at the moment should be at least 10 minutes'),
+          title: Text(AppLocalizations.of(context)!.dto),
+          content: Text(AppLocalizations.of(context)!.dtt),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: Text('Ok', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
+              child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
               onPressed: () { Navigator.of(context).pop();},
             ),
           ],
@@ -746,11 +764,11 @@ class _DetailsPageState extends State<DetailsPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text('This is a free version'),
-          content: Text('You can create only $MAX reminders. If you want to create a reminder, delete one'),
+          title: Text(AppLocalizations.of(context)!.dro),
+          content: Text(AppLocalizations.of(context)!.drt),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: Text('Ok', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
+              child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
               onPressed: () { Navigator.of(context).pop();},
             ),
           ],

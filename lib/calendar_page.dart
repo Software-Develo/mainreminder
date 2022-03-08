@@ -5,6 +5,8 @@ import 'package:reminder/func.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 
 import 'main.dart';
 
@@ -74,47 +76,47 @@ class _CalendarPageState extends State<CalendarPage> {
             if (switchMorning) {
               startTime = DateTime(year, month, day, morningStart, 0, 0);
               endTime = DateTime(year, month, day, morningEnd, 0, 0);
-              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
             }
             if (switchAfternoon) {
               startTime = DateTime(year, month, day, morningEnd, 0, 0);
               endTime = DateTime(year, month, day, afternoonEnd, 0, 0);
-              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
             }
             if (switchEvening) {
               startTime = DateTime(year, month, day, afternoonEnd, 0, 0);
               endTime = DateTime(year, month, day, eveningEnd, 0, 0);
-              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
             }
             if (switchNight) {
               if (morningStart == 0) {
                 startTime = DateTime(year, month, day, eveningEnd, 0, 0);
                 endTime = DateTime(year, month, day, 23, 59, 59);
-                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
               } else if (eveningEnd == 0) {
                 startTime = DateTime(year, month, day + 1, 0, 0, 0);
                 endTime = DateTime(year, month, day + 1, morningStart, 0, 0);
-                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
               } else {
                 startTime = DateTime(year, month, day, eveningEnd, 0, 0);
                 endTime = DateTime(year, month, day, 24, 0, 0);
-                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
 
                 startTime = DateTime(year, month, day + 1, 0, 0, 0);
                 endTime = DateTime(year, month, day + 1, morningStart, 0, 0);
-                meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
               }
             }
             if (switchAllday) {
               startTime = DateTime(year, month, day, alldayStart, 0, 0);
               endTime = DateTime(year, month, day, alldayEnd, 0, 0);
-              meetings.add(Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+              meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
             }
           } else {
             startTime = DateTime(year, month, day, hour!, minute!, 0);
             endTime = DateTime(year, month, day, hour!, minute!, 0);
             meetings.add(
-                Meeting(i, title, note, startTime, endTime, Color(0xFF0F8644)));
+                Meeting(i, title, note, startTime, endTime, lightpurple));
           }
         }
       }
@@ -291,57 +293,104 @@ class _CalendarPageState extends State<CalendarPage> {
         builder: (context, orientation, deviceType){
           return Scaffold(
             appBar: AppBar(
-              title: Text("Calendar", style: TextStyle(color: purple, fontSize: 18),),
-              backgroundColor: Colors.white,
+              title: Text(AppLocalizations.of(context)!.calendarTit, style: TextStyle(color: white, fontSize: 18),),
+              backgroundColor: darkpurple,
               leading: IconButton(
                 icon: SvgPicture.asset('assets/left.svg', width: 30,
                     height: 30,
-                    color: Color.fromRGBO(150, 50, 240, 1)),
+                    color: white),
                 onPressed: () {
                   Navigator.popAndPushNamed(context, mainPage);
                 },
               ),
             ),
             body: SfCalendar(
+              cellBorderColor: dark,
+              backgroundColor: dark,
               dataSource: events,
               onTap: calendarTapped,
               onLongPress: calendarLongPressed,
               appointmentTimeTextFormat: 'HH:mm',
               viewNavigationMode: ViewNavigationMode.snap,
-              allowViewNavigation: true,
+              allowViewNavigation: false,
               timeZone: '',
               view: CalendarView.month,
-              showDatePickerButton: true,
+
+              headerStyle: CalendarHeaderStyle(
+                  textAlign: TextAlign.center,
+                  backgroundColor: dark,
+                  textStyle: TextStyle(
+                      color: white,
+                    fontSize: 13.sp
+                  )
+
+              ),
+
+              viewHeaderStyle: ViewHeaderStyle(
+                  backgroundColor: dark,
+                  dayTextStyle: TextStyle(
+                      fontSize: 18,
+                      color: white,
+                      fontWeight: FontWeight.w500)
+              ),
+//              allowedViews: [
+//                CalendarView.schedule,
+//                CalendarView.day,
+//                CalendarView.week,
+//                CalendarView.timelineMonth
+//              ],
+             // showDatePickerButton: true,
               showNavigationArrow: true,
+
               firstDayOfWeek: 1,
 
               selectionDecoration: BoxDecoration(
                 color: Colors.transparent,
-                border: Border.all(color: Color.fromRGBO(150, 50, 240, 1), width: 2),
+                border: Border.all(color: lightpurple, width: 2),
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
                 shape: BoxShape.rectangle,
               ),
 
-              weekNumberStyle: const WeekNumberStyle(
-                backgroundColor: Color.fromRGBO(150, 50, 240, 1),
-                textStyle: TextStyle(color: Colors.white, fontSize: 15),
+              weekNumberStyle: WeekNumberStyle(
+                //backgroundColor: lightdark,
+                textStyle: TextStyle(color: white, fontSize: 15),
               ),
 
-              todayHighlightColor: Color.fromRGBO(150, 50, 240, 1),
+              todayHighlightColor: lightpurple,
 
               monthViewSettings: MonthViewSettings(
+                monthCellStyle: MonthCellStyle(
+                  textStyle: TextStyle(color: white),
+                  leadingDatesTextStyle: TextStyle(color: gray),
+                  trailingDatesTextStyle: TextStyle(color: gray),
+                ),
+
+
                 dayFormat: 'EEE',
                 navigationDirection: MonthNavigationDirection.horizontal,
                 showAgenda: true,
+
 
                 agendaStyle: AgendaStyle(
                   appointmentTextStyle: TextStyle(
                       fontSize: 14,
                       color: Colors.white
                   ),
-                ),
 
+                  dateTextStyle: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w300,
+                      color: white),
+                  dayTextStyle: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: white),
+                ),
                 agendaViewHeight: 40.h,
+
+
               ),
 
             ),
@@ -358,11 +407,11 @@ class _CalendarPageState extends State<CalendarPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text('Removing reminders'),
-          content: Text('Are you sure you want to delete the reminder?'),
+          title: Text(AppLocalizations.of(context)!.ddo),
+          content: Text(AppLocalizations.of(context)!.ddt),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: Text('Delete', style: TextStyle(color: Colors.red),),
+              child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red),),
               onPressed: () {
                 events!.appointments!.removeAt(
                     events!.appointments!.indexOf(_selectedAppointment));
@@ -376,7 +425,7 @@ class _CalendarPageState extends State<CalendarPage> {
               },
             ),
             CupertinoDialogAction(
-              child: Text('Cancel', style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
+              child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Color.fromRGBO(150, 50, 240, 1)),),
               onPressed: () {
                 Navigator.pop(context);
               },

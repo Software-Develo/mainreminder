@@ -11,11 +11,19 @@ import 'package:get_storage/get_storage.dart';
 import 'details_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 
 import 'l10n/l10n.dart';
 
 Color purple = Color.fromRGBO(150, 50, 240, 1);
-Color gray = CupertinoColors.extraLightBackgroundGray;
+
+Color darkpurple = Color.fromRGBO(92, 4, 187, 1);
+Color lightpurple = Color.fromRGBO(139, 100, 253, 1);
+Color white = Color.fromRGBO(255, 255, 255, 1);
+Color graywhite = Color.fromRGBO(255, 255, 255, 0.8);
+Color gray = Color.fromRGBO(255, 255, 255, 0.6);
+Color dark = Color.fromRGBO(26, 17, 37, 1);
+Color lightdark = Color.fromRGBO(38, 29, 50, 1);
 
 final data = GetStorage();
 
@@ -46,6 +54,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
+
       //title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -63,7 +72,7 @@ class MyApp extends StatelessWidget {
       //home: MyHomePage(title: AppLocalizations.of(context)!.todayTit),
       initialRoute: mainPage,
       routes: {
-        mainPage: (context) => MyHomePage(title: AppLocalizations.of(context)!.todayTit),
+        mainPage: (context) => MyHomePage(title: ""),
         homePage: (context) => HomePage(),
         yesterdayPage: (context) => YesterdayPage(),
         tomorrowPage: (context) => TomorrowPage(),
@@ -93,11 +102,16 @@ class _MyHomePageState extends State<MyHomePage> {
     HomePage(),
     TomorrowPage()
   ];
-
+  @override
   void initState(){
     super.initState();
-    loadStartData();
     getSettings();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    loadStartData(context);
   }
   @override
   Widget build(BuildContext context) {
@@ -108,25 +122,25 @@ class _MyHomePageState extends State<MyHomePage> {
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: currentIndex,
                 //backgroundColor: Color.fromRGBO(255, 103, 104, 1),
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(38, 29, 50, 1),
                 showSelectedLabels: true,
                 showUnselectedLabels: true,
                 selectedIconTheme: IconThemeData(
                   //color: Colors.white,
                   //opacity: 1.0
-                  color: Color.fromRGBO(150, 50, 240, 1),
+                  color: Color.fromRGBO(139, 100, 253, 1),
                   opacity: 1.0
                 ),
                 unselectedIconTheme: IconThemeData(
                   //color: Colors.white,
                   //opacity: 0.5,
-                   color: Color.fromRGBO(102, 97, 97, 1.0),
+                   color: Color.fromRGBO(255, 255, 255, 0.8),
                    opacity: 0.5
                 ),
                 //selectedItemColor: Colors.white,
                 //unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.5),
-                selectedItemColor: Color.fromRGBO(150, 50, 240, 1),
-                unselectedItemColor: Color.fromRGBO(102, 97, 97, 1.0),
+                selectedItemColor: Color.fromRGBO(139, 100, 253, 1),
+                unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.8),
 
                 onTap: (index) => setState(() => currentIndex = index),
                 items: [

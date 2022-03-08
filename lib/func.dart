@@ -1,5 +1,8 @@
 import 'dart:core';
 
+import 'package:flutter/cupertino.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'main.dart';
 import 'package:intl/intl.dart';
 
@@ -20,6 +23,13 @@ bool switchAfternoon = false;// Переключатель дня
 bool switchEvening = false;// Переключатель вечера
 bool switchNight = false;// Переключатель ночи
 bool switchAllday = false;// Переключатель всего дня
+
+late String morningStr;
+late String afternoonStr;
+late String eveningStr;
+late String alldayStr;
+late String nightStr;
+
 
 
 int night = 0;
@@ -81,29 +91,29 @@ void deleteData(int? index){
   arr.remove(index);
 }
 
-String timeToString(String extime){
+String timeToString(String extime,BuildContext context){
   String time = "";
 
-  if (extime != 'Exact time') {
+  if (extime != AppLocalizations.of(context)!.exacttime) {
     time = extime;
   }
   else {
-    if (switchMorning) time = 'Morning';
+    if (switchMorning) time = morningStr;
     if (switchAfternoon)
-      if (time == '') time = 'Afternoon';
-      else time += ', Afternoon';
+      if (time == '') time = afternoonStr;
+      else time += ', $afternoonStr';
     if (switchEvening)
-      if (time == '') time = 'Evening';
-      else time += ', Evening';
+      if (time == '') time = eveningStr;
+      else time += ', $eveningStr';
     if (switchNight)
-      if (time == '') time = 'Night';
-      else time += ', Night';
-    if (switchAllday) time = 'All day';
+      if (time == '') time = nightStr;
+      else time += ', $nightStr';
+    if (switchAllday) time = alldayStr;
   }
   return time;
 }
 
-void loadStartData(){
+void loadStartData(BuildContext context){
   String timeString = '';
   String title = '';
   String note = '';
@@ -124,6 +134,13 @@ void loadStartData(){
   indexesForTomorrow.clear();
   indexesForYesterday.clear();
   freeIndexes.clear();
+
+  morningStr = AppLocalizations.of(context)!.morning;
+  afternoonStr = AppLocalizations.of(context)!.afternoon;
+  eveningStr = AppLocalizations.of(context)!.evening;
+  alldayStr = AppLocalizations.of(context)!.allday;
+  nightStr = AppLocalizations.of(context)!.night;
+
 
   for(int i = 0; i < 25; i++){
     timeString  = '';
@@ -161,7 +178,7 @@ void loadStartData(){
       if(DateTime.now().isAfter(dateTime)) data.write("active$i", false);
       else val_rem++;
 
-      timeString = timeToString(extime);
+      timeString = timeToString(extime, context);
       arr.add(DataOfRem(del, act, title, note, date, timeString, extime,
           switchMorning, switchAfternoon, switchEvening, switchNight, switchAllday, year, month, day, hour, minute)); //Записываем данные в массив
 
