@@ -69,18 +69,13 @@ class _SettingsPageState extends State<SettingsPage>{
         builder: (context, orientation, deviceType) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(
-                AppLocalizations.of(context)!.settingsTit,
-                style: TextStyle(
-                    color: purple,
-                    fontSize: 18
-                ),
-              ),
+              backgroundColor: whitecolor,
+              title: Text(AppLocalizations.of(context)!.settingsTit, style: TextStyle(color: mediumblue, fontSize: 15.sp),),
               //title: Text(widget.title),
               centerTitle: true,
               leading: IconButton(
                 //icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: Color.fromRGBO(255, 103, 104, 1)),
-                icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: purple),
+                icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: mediumblue),
                 onPressed: () {
                   getSettings();
                   Navigator.popAndPushNamed(context, mainPage);
@@ -90,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage>{
                   CupertinoButton(
                       child: Text(
                         AppLocalizations.of(context)!.save,
-                        style: TextStyle(color: purple),
+                        style: TextStyle(color: mediumblue),
                       ),
                       onPressed: () {
                         if(valuesNight >= 3) {
@@ -104,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage>{
                       }
                   )
               ],
-              backgroundColor: Colors.white,
+
             ),
             body: SingleChildScrollView(
                   child:
@@ -113,6 +108,7 @@ class _SettingsPageState extends State<SettingsPage>{
                         Container(
                             width: 100.0.w,
                             height: 100.0.h,
+                            color: whitecolor,
                             child:
                             ListView(
                                 scrollDirection: Axis.vertical,
@@ -127,17 +123,18 @@ class _SettingsPageState extends State<SettingsPage>{
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           AppLocalizations.of(context)!.morning,
-                                          style: TextStyle(color: purple, fontSize: 13.sp),
+                                          style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                         ),
                                       ),
                                       Container(
                                           width: 90.w,
                                           child: SliderTheme(
                                             data: SliderThemeData(
+                                              valueIndicatorColor: darkpurple,
                                               thumbSelector: _customRangeThumbSelector,
                                             ),
                                             child: RangeSlider(
-                                              activeColor: purple,
+                                              activeColor: darkpurple,
                                               inactiveColor: Colors.black12,
                                               values: valuesMorning,
                                               min: 0,
@@ -169,17 +166,18 @@ class _SettingsPageState extends State<SettingsPage>{
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           AppLocalizations.of(context)!.afternoon,
-                                          style: TextStyle(color: purple, fontSize: 13.sp),
+                                          style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                         ),
                                       ),
                                       Container(
                                           width: 90.w,
                                           child: SliderTheme(
                                             data: SliderThemeData(
+                                              valueIndicatorColor: darkpurple,
                                               thumbSelector: _customRangeThumbSelector,
                                             ),
                                             child: RangeSlider(
-                                              activeColor: purple,
+                                              activeColor: darkpurple,
                                               inactiveColor: Colors.black12,
                                               values: valuesAfternoon,
                                               min: 0,
@@ -216,17 +214,18 @@ class _SettingsPageState extends State<SettingsPage>{
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           AppLocalizations.of(context)!.evening,
-                                          style: TextStyle(color: purple, fontSize: 13.sp),
+                                          style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                         ),
                                       ),
                                       Container(
                                           width: 90.w,
                                           child: SliderTheme(
                                             data: SliderThemeData(
+                                              valueIndicatorColor: darkpurple,
                                               thumbSelector: _customRangeThumbSelector,
                                             ),
                                             child: RangeSlider(
-                                              activeColor: purple,
+                                              activeColor: darkpurple,
                                               inactiveColor: Colors.black12,
                                               values: valuesEvening,
                                               min: 0,
@@ -258,17 +257,18 @@ class _SettingsPageState extends State<SettingsPage>{
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           AppLocalizations.of(context)!.allday,
-                                          style: TextStyle(color: purple, fontSize: 13.sp),
+                                          style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                         ),
                                       ),
                                       Container(
                                           width: 90.w,
                                           child: SliderTheme(
                                             data: SliderThemeData(
+                                              valueIndicatorColor: darkpurple,
                                               thumbSelector: _customRangeThumbSelector,
                                             ),
                                             child: RangeSlider(
-                                              activeColor: purple,
+                                              activeColor: darkpurple,
                                               inactiveColor: Colors.black12,
                                               values: valuesAllday,
                                               min: 0,
@@ -299,7 +299,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                               height: 50,
                                               child: Text(
                                                 AppLocalizations.of(context)!.night,
-                                                style: TextStyle(color: purple, fontSize: 13.sp),
+                                                style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                               ),
                                             ),
                                             Container(
@@ -308,7 +308,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                               height: 50,
                                               child: Text(
                                                 '$valuesNight',
-                                                style: TextStyle(color: purple, fontSize: 13.sp),
+                                                style: TextStyle(color: mediumblue, fontSize: 13.sp),
                                               ),
                                             )
                                           ],

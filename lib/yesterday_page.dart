@@ -54,38 +54,36 @@ class _YesterdayPageState extends State<YesterdayPage> {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
-            backgroundColor: dark,
+            backgroundColor: whitecolor,
               appBar: AppBar(
-                title: Text(title, style: TextStyle(color: white, fontSize: 18),),
+                title: Text(title, style: TextStyle(color: mediumblue, fontSize: 15.sp),),
                 centerTitle: true,
 
                 leading: IconButton(
-                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: white),
+                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: mediumblue),
                   onPressed: () {
                     Navigator.pushNamed(context, settingsPage);
                   },
                 ),
                 actions: [
                   IconButton(
-                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: white),
+                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: mediumblue),
                     onPressed: () {
                       Navigator.pushNamed(context, calendarPage);
                     },
                   )
                 ],
-                backgroundColor: darkpurple,
+                backgroundColor: whitecolor,
               ),
-              floatingActionButton: FloatingActionButton.extended(
+              floatingActionButton: FloatingActionButton(
                 onPressed: () {
                   setState(() {
                     numRemData = null;
                   });
-
                   Navigator.pushNamed(context, detailsPage);
                 },
-                backgroundColor: lightdark,
-                icon: Icon(Icons.add, color: lightpurple),
-                label: Text(addevent),
+                backgroundColor: Color(0xffe8ecf0),
+                child: Icon(Icons.add, color: mediumblue),
               ),
               body: ListView.builder(
                   itemCount: indexesForYesterday.length,
@@ -100,7 +98,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                 Container(
                                   width: 10.w,
                                   child: IconButton(
-                                    icon: SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: white),
+                                    icon: SvgPicture.asset('assets/not_completed.svg', width: 30, height: 30, color: mediumblue),
                                     onPressed: () {
                                       setState(() {
                                         buildDialogAboutDelete(indexesForYesterday[i]);
@@ -121,7 +119,7 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                               width: 70.w,
                                               child: Text(
                                                 arr[indexesForYesterday[i]].title,
-                                                style: TextStyle(color: white,fontSize: 14.sp),
+                                                style: TextStyle(color: mediumblue,fontSize: 14.sp),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -132,23 +130,15 @@ class _YesterdayPageState extends State<YesterdayPage> {
                                                 child: Text(
                                                   arr[indexesForYesterday[i]].note,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(color: graywhite, fontSize: 12.sp),
+                                                  style: TextStyle(color: lightblue, fontSize: 12.sp),
                                                   maxLines: 2,
                                                 ),
                                               ),
                                             Container(
                                               width: 70.w,
                                               child: Text(
-                                                arr[indexesForYesterday[i]].date,
-                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 70.w,
-                                              child: Text(
                                                 arr[indexesForYesterday[i]].time,
-                                                style: TextStyle(color: graywhite, fontSize: 12.sp),
+                                                style: TextStyle(color: lightblue, fontSize: 12.sp),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),

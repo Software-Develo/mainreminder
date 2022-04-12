@@ -19,11 +19,16 @@ Color purple = Color.fromRGBO(150, 50, 240, 1);
 
 Color darkpurple = Color.fromRGBO(92, 4, 187, 1);
 Color lightpurple = Color.fromRGBO(139, 100, 253, 1);
-Color white = Color.fromRGBO(255, 255, 255, 1);
+Color white = Color(0xffe8ecf0);
 Color graywhite = Color.fromRGBO(255, 255, 255, 0.8);
 Color gray = Color.fromRGBO(255, 255, 255, 0.6);
 Color dark = Color.fromRGBO(26, 17, 37, 1);
 Color lightdark = Color.fromRGBO(38, 29, 50, 1);
+
+Color whitecolor = Color(0xffd3e1ed);
+Color darkblue = Color(0xff0a1a4c);
+Color mediumblue = Color(0xff4430ab);
+Color lightblue = Color(0xff534fce);
 
 final data = GetStorage();
 
@@ -39,6 +44,7 @@ int? numRemData;
 
 const int MAX = 5;
 
+DateTime currentTime = DateTime.now();
 
 void main() async {
   await GetStorage.init();
@@ -122,25 +128,25 @@ class _MyHomePageState extends State<MyHomePage> {
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: currentIndex,
                 //backgroundColor: Color.fromRGBO(255, 103, 104, 1),
-                backgroundColor: Color.fromRGBO(38, 29, 50, 1),
+                backgroundColor: whitecolor,
                 showSelectedLabels: true,
                 showUnselectedLabels: true,
                 selectedIconTheme: IconThemeData(
                   //color: Colors.white,
                   //opacity: 1.0
-                  color: Color.fromRGBO(139, 100, 253, 1),
+                  color: mediumblue,
                   opacity: 1.0
                 ),
                 unselectedIconTheme: IconThemeData(
                   //color: Colors.white,
                   //opacity: 0.5,
-                   color: Color.fromRGBO(255, 255, 255, 0.8),
+                   color: lightblue,
                    opacity: 0.5
                 ),
                 //selectedItemColor: Colors.white,
                 //unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.5),
-                selectedItemColor: Color.fromRGBO(139, 100, 253, 1),
-                unselectedItemColor: Color.fromRGBO(255, 255, 255, 0.8),
+                selectedItemColor: mediumblue,
+                unselectedItemColor: lightblue,
 
                 onTap: (index) => setState(() => currentIndex = index),
                 items: [

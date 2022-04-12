@@ -13,6 +13,8 @@ List<int> indexesForTomorrow = [];
 List<int> indexesForYesterday = [];
 List<int> freeIndexes = [];
 List<int> busyIndexes = [];
+List<int> rangeTime = [];
+List<String> interim = [];
 
 int val_rem = 0;
 int set_date = 0;
@@ -24,11 +26,11 @@ bool switchEvening = false;// Переключатель вечера
 bool switchNight = false;// Переключатель ночи
 bool switchAllday = false;// Переключатель всего дня
 
-late String morningStr;
-late String afternoonStr;
-late String eveningStr;
-late String alldayStr;
-late String nightStr;
+String morningStr = "";
+String afternoonStr = "";
+String eveningStr = "";
+String alldayStr = "";
+String nightStr = "";
 
 
 
@@ -211,6 +213,7 @@ void loadStartData(BuildContext context){
 
 
 void getSettings(){
+  rangeTime.clear();
   if(data.read('enter') == null){
     night = 9;
     morningStart = 8;
@@ -229,6 +232,10 @@ void getSettings(){
     alldayStart = data.read('allday_start');
     alldayEnd = data.read('allday_end');
   }
+  rangeTime.add(morningStart);
+  rangeTime.add(morningEnd);
+  rangeTime.add(afternoonEnd);
+  rangeTime.add(eveningEnd);
 }
 
 void minTime(){

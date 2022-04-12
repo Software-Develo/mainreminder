@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:reminder/func.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
-import 'package:syncfusion_flutter_core/theme.dart';
-
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'main.dart';
 
 int yearForGet = 0;
@@ -26,8 +24,9 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late String title;
-  late String note;
+  String title = "";
+  String note = "";
+  String rangeTimeString = "";
 
   String? _titleText = '',
       _noteText = '',
@@ -36,26 +35,37 @@ class _CalendarPageState extends State<CalendarPage> {
       _dateText = '',
       _timeDetails = '';
 
-  int value = arr.length;
+  int value = arr.length, len = 0;
   int year = 0, month = 0, day = 0;
+  int j = 0;
+  int? a = null;
   int? hour, minute;
 
   Meeting? _selectedAppointment;
   MeetingDataSource? events;
+  CalendarController _calendarController = CalendarController();
 
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now();
+
+
+  List<Meeting> detailsInd = [];
+  List<bool> switches = [];
+  final List<Meeting> meetings = <Meeting>[];
 
 //    int value = data.read('val')??0;
 
   @override
   void initState(){
     super.initState();
+    _calendarController.displayDate = DateTime.now();
     events = _getDataSource();
   }
 
   MeetingDataSource _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
+    int meet_int = 0;
+    bool flag = false;
+    interim.clear();
 
     if(value != 0){
       for(int i = 0; i < value; i++) {
@@ -68,12 +78,103 @@ class _CalendarPageState extends State<CalendarPage> {
           hour = arr[i].hour;
           minute = arr[i].minute;
           if (hour == null) {
-            switchMorning = arr[i].morning;
-            switchAfternoon = arr[i].afternoon;
-            switchEvening = arr[i].evening;
-            switchNight = arr[i].night;
+            flag = false;
+            int len = 4;
+            j = 0;
+            startTime = endTime = DateTime(year, month, day);
+            switches.add(switchMorning = arr[i].morning);
+            switches.add(switchAfternoon = arr[i].afternoon);
+            switches.add(switchEvening = arr[i].evening);
+            switches.add(switchNight = arr[i].night);
             switchAllday = arr[i].allday;
-            if (switchMorning) {
+
+            while(j < len) {
+              for (j; j < len; j++) {
+                if (switches[j]) {
+                  if (j == 3)
+                    if (eveningEnd == 0) {
+                      rangeTimeString = "00:00";
+                      startTime = DateTime(year, month, day, 0);
+                    }
+                    else{
+                      rangeTimeString = "$eveningEnd:00";
+                      startTime = DateTime(year, month, day, eveningEnd);
+                    }
+
+                  else {
+                    rangeTimeString = "${rangeTime[j]}:00";
+                    startTime = DateTime(year, month, day, rangeTime[j]);
+                  }
+                  break;
+                }
+              }
+              if (j == 3) j--;
+              for (++j; j < len; j++) {
+                if (j != 3) {
+                  if(!switches[j]){
+                    rangeTimeString += "-${rangeTime[j]}:00";
+                    endTime = DateTime(year, month, day, rangeTime[j]);
+                    meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                    break;
+                  }
+                  else if (switches[j] && !switches[j + 1]) {
+                    rangeTimeString += "-${rangeTime[j + 1]}:00";
+                    endTime = DateTime(year, month, day, rangeTime[j + 1]);
+                    meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                    break;
+                  }
+                  else if (j == 2 && switches[j + 1]) {
+                    if (morningStart != 0) {
+                      rangeTimeString += "-23:59";
+                      endTime = DateTime(year, month, day, 23, 59);
+                      meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                      rangeTimeString = "00:00-$morningStart:00";
+                      meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, DateTime(year, month, day + 1, 0), DateTime(year, month, day + 1, morningStart), lightpurple));
+                      flag = true;
+                      break;
+
+                    }
+                    else {
+                      rangeTimeString += "-23:59";
+                      endTime = DateTime(year, month, day, 23, 59);
+                      meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                    }
+                  }
+                }
+                else if(j == 3 && switchNight) {
+                  rangeTimeString += "-23:59";
+                  endTime = DateTime(year, month, day, 23, 59);
+                  meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                  if (morningStart != 0) {
+                    rangeTimeString = "00:00-$morningStart:00";
+                    meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, DateTime(year, month, day + 1, 0), DateTime(year, month, day + 1, morningStart), lightpurple));
+                    flag = true;
+                    break;
+                  }
+                }
+                else if(j == 3){
+                  rangeTimeString += "-${rangeTime[j]}:00";
+                  endTime = DateTime(year, month, day, rangeTime[j], 00);
+                  meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+                }
+              }
+              if(flag) break;
+              j++;
+            }
+            if(switchAllday){
+              if(alldayEnd != 0) {
+                rangeTimeString = "$alldayStart:00-$alldayEnd:00";
+                startTime = DateTime(year, month, day, alldayStart);
+                endTime = DateTime(year, month, day, alldayEnd);
+              }
+              else {
+                rangeTimeString = "$alldayStart:00-23:59";
+                startTime = DateTime(year, month, day, alldayStart);
+                endTime = DateTime(year, month, day, 23, 59);
+              }
+              meetings.add(Meeting(i, meet_int++, rangeTimeString, title, note, startTime, endTime, lightpurple));
+            }
+/*            if (switchMorning) {
               startTime = DateTime(year, month, day, morningStart, 0, 0);
               endTime = DateTime(year, month, day, morningEnd, 0, 0);
               meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
@@ -112,12 +213,17 @@ class _CalendarPageState extends State<CalendarPage> {
               endTime = DateTime(year, month, day, alldayEnd, 0, 0);
               meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
             }
-          } else {
+
+ */
+            switches.clear();
+          }
+/*          else {
             startTime = DateTime(year, month, day, hour!, minute!, 0);
             endTime = DateTime(year, month, day, hour!, minute!, 0);
-            meetings.add(
-                Meeting(i, title, note, startTime, endTime, lightpurple));
+            meetings.add(Meeting(i, title, note, startTime, endTime, lightpurple));
           }
+
+ */
         }
       }
     }
@@ -125,12 +231,42 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 
-  //Быстрое нажатие на напоминалку
-  void calendarTapped(CalendarTapDetails details){
-    if(details.targetElement == CalendarElement.appointment || details.targetElement == CalendarElement.agenda){
-      Meeting appointmentDetails = details.appointments![0];
-      _selectedAppointment = appointmentDetails;
 
+  //Быстрое нажатие на напоминание
+  void calendarTapped(CalendarTapDetails tapDetails){
+    if(tapDetails.targetElement == CalendarElement.calendarCell){
+      setState(() {
+        detailsInd.clear();
+        Meeting appointmentDetails, temp;
+        int diff;
+        len = tapDetails.appointments!.length;
+        for(int i = 0; i < len; i++){
+          appointmentDetails = tapDetails.appointments![i];
+          detailsInd.add(appointmentDetails);
+        }
+
+        for(int i = 0; i < len; i++){
+          for(int j = 0; j < len - i - 1; j++){
+            diff = detailsInd[j].from.difference(detailsInd[j + 1].from).inHours;
+            if(diff > 0){
+              temp = detailsInd[j];
+              detailsInd[j] = detailsInd[j + 1];
+              detailsInd[j + 1] = temp;
+            }
+            else if(diff == 0){
+              diff = detailsInd[j].from.difference(detailsInd[j + 1].from).inMinutes;
+              if(diff < 0){
+                temp = detailsInd[j];
+                detailsInd[j] = detailsInd[j + 1];
+                detailsInd[j + 1] = temp;
+              }
+            }
+          }
+        }
+      });
+
+/*      Meeting appointmentDetails = tapDetails.appointments![0];
+      _selectedAppointment = appointmentDetails;
       //Запись данных
       _titleText = appointmentDetails.eventName;
       _noteText = appointmentDetails.note;
@@ -153,7 +289,6 @@ class _CalendarPageState extends State<CalendarPage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 SizedBox(height: 2.h,),
-
                 //Заголовок
                 Container(
                   margin: EdgeInsets.only(left: 10, right: 10),
@@ -163,9 +298,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     style: TextStyle(fontSize: 16.sp),
                   ),
                 ),
-
                 SizedBox(height: 1.h,),
-
                 //Заметка
                 Container(
                   margin: EdgeInsets.only(left: 10, right: 10),
@@ -176,9 +309,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     textAlign: TextAlign.justify,
                   ),
                 ),
-
                 SizedBox(height: 1.h,),
-
                 //Время
                 Container(
                   margin: EdgeInsets.only(left: 10, right: 10),
@@ -188,9 +319,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     style: TextStyle(fontSize: 14.sp),
                   ),
                 ),
-
                 SizedBox(height: 1.h,),
-
                 //Дата
                 Container(
                   margin: EdgeInsets.only(left: 10, right: 10),
@@ -200,9 +329,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     style: TextStyle(fontSize: 14.sp),
                   ),
                 ),
-
                 SizedBox(height: 1.h,),
-
                 //Кнопки
                 Container(
                   margin: EdgeInsets.only(left: 10, right: 10),
@@ -229,7 +356,6 @@ class _CalendarPageState extends State<CalendarPage> {
                           label: Text('')
                         ),
                       ),
-
                       //Удаление напоминалки
                       Container(
                         alignment: Alignment.center,
@@ -241,8 +367,6 @@ class _CalendarPageState extends State<CalendarPage> {
                             label: Text('')
                         ),
                       ),
-
-
                       //Закрытие всплывающего окна
                       Container(
                         alignment: Alignment.centerRight,
@@ -261,19 +385,19 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             );
           });
+
+    */
     }
   }
-
-
   //Долгое нажатие на ячейку календаря
-  void calendarLongPressed(CalendarLongPressDetails details){
+  void calendarLongPressed(CalendarLongPressDetails longPressDetails){
 
-    yearForGet = details.date!.year;
-    monthForGet = details.date!.month;
-    dayForGet = details.date!.day;
+    yearForGet = longPressDetails.date!.year;
+    monthForGet = longPressDetails.date!.month;
+    dayForGet = longPressDetails.date!.day;
 
 
-    if(details.date!.difference(DateTime.now()).inDays >= 0) {
+    if(longPressDetails.date!.difference(DateTime.now()).inDays >= 0) {
       itIsCalendarPage = true;
       createRemWithCalendar = true;
       numRemData = null;
@@ -285,123 +409,241 @@ class _CalendarPageState extends State<CalendarPage> {
       dayForGet = 0;
     }
   }
-
-
   @override
   Widget build(BuildContext context) {
     return Sizer(
         builder: (context, orientation, deviceType){
           return Scaffold(
+
             appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.calendarTit, style: TextStyle(color: white, fontSize: 18),),
-              backgroundColor: darkpurple,
+              title: Text(AppLocalizations.of(context)!.calendarTit, style: TextStyle(color: mediumblue, fontSize: 15.sp),),
+              backgroundColor: whitecolor,
+              centerTitle: true,
               leading: IconButton(
                 icon: SvgPicture.asset('assets/left.svg', width: 30,
                     height: 30,
-                    color: white),
+                    color: mediumblue),
                 onPressed: () {
+                  currentTime = DateTime.now();
                   Navigator.popAndPushNamed(context, mainPage);
                 },
               ),
             ),
-            body: SfCalendar(
-              cellBorderColor: dark,
-              backgroundColor: dark,
-              dataSource: events,
-              onTap: calendarTapped,
-              onLongPress: calendarLongPressed,
-              appointmentTimeTextFormat: 'HH:mm',
-              viewNavigationMode: ViewNavigationMode.snap,
-              allowViewNavigation: false,
-              timeZone: '',
-              view: CalendarView.month,
+            body: Container(
+              color: whitecolor,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
 
-              headerStyle: CalendarHeaderStyle(
-                  textAlign: TextAlign.center,
-                  backgroundColor: dark,
-                  textStyle: TextStyle(
-                      color: white,
-                    fontSize: 13.sp
+                children: [
+                  Container(
+                    height: 50.h,
+                    child: SfCalendar(
+                      cellBorderColor: whitecolor,
+                      backgroundColor: whitecolor,
+                      controller: _calendarController,
+                      dataSource: events,
+                      onTap: calendarTapped,
+                      onLongPress: calendarLongPressed,
+                      appointmentTimeTextFormat: 'HH:mm',
+                      viewNavigationMode: ViewNavigationMode.snap,
+                      allowViewNavigation: false,
+                      timeZone: '',
+                      todayHighlightColor: mediumblue,
+                      showNavigationArrow: true,
+                      showDatePickerButton: false,
+                      firstDayOfWeek: 1,
+                      view: CalendarView.month,
+                      headerStyle: CalendarHeaderStyle(
+                          textAlign: TextAlign.center,
+                          backgroundColor: whitecolor,
+                          textStyle: TextStyle(
+                              color: mediumblue,
+                              fontSize: 15.sp
+                          )
+                      ),
+                      viewHeaderStyle: ViewHeaderStyle(
+                          backgroundColor: whitecolor,
+                          dayTextStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: lightblue,
+                              fontWeight: FontWeight.w500)
+                      ),
+      //              allowedViews: [
+      //                CalendarView.schedule,
+      //                CalendarView.day,
+      //                CalendarView.week,
+      //                CalendarView.timelineMonth
+      //              ],
+                      selectionDecoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: mediumblue, width: 2),
+                        borderRadius: const BorderRadius.all(Radius.circular(4)),
+                        shape: BoxShape.rectangle,
+                      ),
+                      weekNumberStyle: WeekNumberStyle(
+                        //backgroundColor: lightdark,
+                        textStyle: TextStyle(color: lightblue, fontSize: 15),
+                      ),
+                      monthViewSettings: MonthViewSettings(
+                        monthCellStyle: MonthCellStyle(
+                          textStyle: TextStyle(color: lightblue),
+                          leadingDatesTextStyle: TextStyle(color: Color(0xff7f7bce)),
+                          trailingDatesTextStyle: TextStyle(color: Color(0xff7f7bce)),
+                        ),
+                        dayFormat: 'EEE',
+                        navigationDirection: MonthNavigationDirection.horizontal,
+                        showAgenda: false,
+                        agendaStyle: AgendaStyle(
+                          appointmentTextStyle: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white
+                          ),
+                          dateTextStyle: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w300,
+                              color: white),
+                          dayTextStyle: TextStyle(
+                              fontStyle: FontStyle.normal,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: white),
+                        ),
+                        agendaViewHeight: 40.h,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 35.h,
+                    child: ListView.builder(
+                      itemCount: detailsInd.length,
+                      itemBuilder: (context, i){
+                        return Slidable(
+                            key: UniqueKey(),
+                            endActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              extentRatio: 0.25,
+                              children: [
+                                SlidableAction(
+                                  label: AppLocalizations.of(context)!.delete,
+                                  backgroundColor: Colors.red,
+                                  icon: Icons.delete,
+                                  onPressed: (context) {
+                                    buildDialogAboutDelete(detailsInd[i].meet_ind, i, detailsInd[i].index, detailsInd[i].from);
+                                  },
+                                ),
+                              ],
+                            ),
+
+                            child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 3.w,
+                              ),
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          height: 40,
+                                          width: 5,
+                                          color: darkpurple,
+                                        ),
+                                        Column(
+                                          //mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                                width: 85.w,
+                                                //decoration: BoxDecoration(
+                                                //    color: mediumblue,
+                                                //    borderRadius: BorderRadius.only(topRight: const Radius.circular(40), bottomRight: const Radius.circular(40))
+                                                //),
+
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(width: 3.w,),
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      children: [
+                                                        TextButton(
+                                                            onPressed: () {
+                                                              numRemData = detailsInd[i].index;
+                                                              itIsCalendarPage = true;
+                                                              Navigator.pushNamed(context, detailsPage);
+                                                            },
+                                                            child: Container(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                                  children: [
+                                                                    Container(
+                                                                      width: 70.w,
+                                                                      child: Text(
+                                                                        detailsInd[i].eventName,
+                                                                        style: TextStyle(color: mediumblue,fontSize: 14.sp),
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                      ),
+                                                                    ),
+                                                                    if(detailsInd[i].note != '')
+                                                                      Container(
+                                                                        width: 70.w,
+                                                                        child: Text(
+                                                                          detailsInd[i].note,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          style: TextStyle(color: lightblue, fontSize: 12.sp),
+                                                                          maxLines: 2,
+                                                                        ),
+                                                                      ),
+                                                                    Container(
+                                                                      width: 70.w,
+                                                                      child: Text(
+                                                                        detailsInd[i].range,
+                                                                        style: TextStyle(color: lightblue, fontSize: 12.sp),
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                      ),
+                                                                    ),
+
+                                                                  ],
+                                                                )
+                                                            )
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(height: 20,)
+                                  ],
+                                ),
+                              ),
+
+                            ],
+                          )
+                        );
+                      },
+                    ),
                   )
 
+                ],
               ),
+            )
 
-              viewHeaderStyle: ViewHeaderStyle(
-                  backgroundColor: dark,
-                  dayTextStyle: TextStyle(
-                      fontSize: 18,
-                      color: white,
-                      fontWeight: FontWeight.w500)
-              ),
-//              allowedViews: [
-//                CalendarView.schedule,
-//                CalendarView.day,
-//                CalendarView.week,
-//                CalendarView.timelineMonth
-//              ],
-             // showDatePickerButton: true,
-              showNavigationArrow: true,
-
-              firstDayOfWeek: 1,
-
-              selectionDecoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(color: lightpurple, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
-                shape: BoxShape.rectangle,
-              ),
-
-              weekNumberStyle: WeekNumberStyle(
-                //backgroundColor: lightdark,
-                textStyle: TextStyle(color: white, fontSize: 15),
-              ),
-
-              todayHighlightColor: lightpurple,
-
-              monthViewSettings: MonthViewSettings(
-                monthCellStyle: MonthCellStyle(
-                  textStyle: TextStyle(color: white),
-                  leadingDatesTextStyle: TextStyle(color: gray),
-                  trailingDatesTextStyle: TextStyle(color: gray),
-                ),
-
-
-                dayFormat: 'EEE',
-                navigationDirection: MonthNavigationDirection.horizontal,
-                showAgenda: true,
-
-
-                agendaStyle: AgendaStyle(
-                  appointmentTextStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white
-                  ),
-
-                  dateTextStyle: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w300,
-                      color: white),
-                  dayTextStyle: TextStyle(
-                      fontStyle: FontStyle.normal,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: white),
-                ),
-                agendaViewHeight: 40.h,
-
-
-              ),
-
-            ),
           );
         }
     );
   }
-
-
-
-  Future<void> buildDialogAboutDelete() async {
+  Future<void> buildDialogAboutDelete(int meet_ind, int details_ind, int rem_ind, DateTime Time) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -413,14 +655,31 @@ class _CalendarPageState extends State<CalendarPage> {
             CupertinoDialogAction(
               child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red),),
               onPressed: () {
-                events!.appointments!.removeAt(
+                int j;
+/*                events!.appointments!.removeAt(
                     events!.appointments!.indexOf(_selectedAppointment));
                 events!.notifyListeners(CalendarDataSourceAction.remove,
                     <Meeting>[]..add(_selectedAppointment!));
-
                 deleteData(_selectedAppointment?.index);
+ */
+                currentTime = Time;
+                //deleteData(rem_ind);
+                j = detailsInd[details_ind].index;
+                for(int i = 0; i < detailsInd.length; i++){
+                  if(detailsInd[i].index == j)
+                    setState(() => detailsInd.removeAt(i));
+                }
 
-                Navigator.pop(context);
+                for(int i = 0; i < 3; i++){
+                  if(meet_ind < meetings.length) if(meetings[meet_ind].index == j) meetings.removeAt(meet_ind);
+                  if(meet_ind - 1 >= 0) if(meetings[meet_ind - 1].index == j) meetings.removeAt(meet_ind - 1);
+                }
+                for(int i = 0; i < 3; i++){
+                  if(meet_ind + i < meetings.length && meetings[meet_ind + i].index == j) meetings.removeAt(meet_ind + i);
+                  if(meet_ind - i >= 0 && meetings[meet_ind - i].index == j) meetings.removeAt(meet_ind - i);
+                }
+                setState(() => events = MeetingDataSource(meetings));
+                //build(context);
                 Navigator.pop(context);
               },
             ),
@@ -435,10 +694,7 @@ class _CalendarPageState extends State<CalendarPage> {
       },
     );
   }
-
 }
-
-
 
 class MeetingDataSource extends CalendarDataSource {
   MeetingDataSource(List<Meeting> source){
@@ -474,12 +730,22 @@ class MeetingDataSource extends CalendarDataSource {
     return appointments![index].index as int;
   }
 
+  int getMeetIndex(int index) {
+    return appointments![index].meet_ind as int;
+  }
+
+  String getRange(int index) {
+    return appointments![index].range as String;
+  }
+
 }
 
 class Meeting {
-  Meeting(this.index, this.eventName, this.note, this.from, this.to, this.background);
+  Meeting(this.index, this.meet_ind, this.range, this.eventName, this.note, this.from, this.to, this.background);
 
   int index;
+  int meet_ind;
+  String range;
   String eventName;
   String note;
   DateTime from;

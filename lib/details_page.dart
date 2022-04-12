@@ -19,7 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class DetailsPage extends StatefulWidget {
 
-  DetailsPage({Key? key}) : super(key: key);
+  DetailsPage({Key? key, numRemData}) : super(key: key);
 
   @override
   _DetailsPageState createState() => _DetailsPageState();
@@ -27,15 +27,10 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
 
-  String date = '', extime = '', textTitle = '';
-  String textNotes = '', timeString = '';
-
-  bool haveAptime = false, change = false, click = false, result = false;
-  bool active = false, delete = false;
-
+  String date = '', extime = '', textTitle = '', textNotes = '', timeString = '';
+  bool haveAptime = false, change = false, click = false, result = false, active = false, delete = false;
   int year = 0, month = 0, day = 0;
   int? hour, minute;
-
   DateTime dateTimeNow = DateTime.now(), dateTime = DateTime.now();
 
   @override
@@ -54,10 +49,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void saveRem(){
-    if (switchMorning || switchAfternoon ||
-        switchEvening || switchNight ||
-        switchAllday) haveAptime = true;// Если есть приблизительное время
-
+    if (switchMorning || switchAfternoon || switchEvening || switchNight || switchAllday) haveAptime = true;// Если есть приблизительное время
     if(textTitle != '' && date != AppLocalizations.of(context)!.date) {// Если есть название и дата
       if (!haveAptime && extime == AppLocalizations.of(context)!.exacttime) buildAlertDialogAboutFields();// Если нет приблизительного и точного времени, то строим всплывающее окно
       else {
@@ -68,7 +60,6 @@ class _DetailsPageState extends State<DetailsPage> {
               active = true;
               setDetails(freeIndexes[0]);
               setVal(val_rem + 1);
-//                                  print("Details");
 //                                  loadStartData();
               numRemData = null;
               if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
@@ -130,7 +121,7 @@ class _DetailsPageState extends State<DetailsPage> {
       date = DateFormat('dd/MM/yyyy').format(dateTime);
       createRemWithCalendar = false;
     }
-    if(createWithTomorrowPage){
+    else if(createWithTomorrowPage){
       dateTime = new DateTime(dateTime.year, dateTime.month, dateTime.day + 1, dateTime.hour, dateTime.minute);
       createWithTomorrowPage = false;
     }
@@ -221,13 +212,13 @@ class _DetailsPageState extends State<DetailsPage> {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
-            backgroundColor: dark,
+            backgroundColor: mediumblue,
               appBar: AppBar(
                 title: Text(
                   AppLocalizations.of(context)!.detailsTit,
                   style: TextStyle(
                       color: white,
-                      fontSize: 18
+                      fontSize: 15.sp
                   ),
                 ),
                 centerTitle: true,
@@ -236,7 +227,11 @@ class _DetailsPageState extends State<DetailsPage> {
                   icon: SvgPicture.asset('assets/left.svg', width: 30, height: 30, color: white),
                   onPressed: () {
 //                    numRemData = null;
-                    Navigator.popAndPushNamed(context, mainPage);
+                    if(itIsCalendarPage) {
+                      itIsCalendarPage = false;
+                      Navigator.popAndPushNamed(context, calendarPage);
+                    }
+                    else Navigator.popAndPushNamed(context, mainPage);
                   },
                 ),
                 actions: [
@@ -245,12 +240,10 @@ class _DetailsPageState extends State<DetailsPage> {
                       AppLocalizations.of(context)!.save,
                       style: TextStyle(color: white),
                     ),
-                    onPressed: () {
-                        saveRem();
-                    }
+                    onPressed: () => saveRem()
                   )
                 ],
-                backgroundColor: darkpurple,
+                backgroundColor: mediumblue,
               ),
               body:
               ListView(
@@ -260,88 +253,96 @@ class _DetailsPageState extends State<DetailsPage> {
                     Column(
                         mainAxisAlignment:  MainAxisAlignment.center,
                         children:[
-                          Container(// Title
-                              alignment: Alignment.centerLeft,
-                              width: 90.w,
-                              height: 60,
-                              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                              foregroundDecoration: BoxDecoration(
-                                border: Border.all(color: dark, width: 1),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child:
-                              TextFormField(
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(5.w, 20, 5.w, 0),
+                            child: Center(
+                              child: TextFormField(
                                 initialValue: textTitle,
                                 style: TextStyle(color: graywhite),
                                 keyboardType: TextInputType.text,
                                 maxLines: 1,
                                 maxLength: 50,
-                                cursorColor: purple,
+                                cursorColor: darkblue,
                                 decoration: InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
-                                        //borderSide: BorderSide(color: lightdark)
+                                        borderSide: BorderSide(
+                                            color: lightblue
+                                        )
                                     ),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
-                                        //borderSide: BorderSide(color: lightdark)
+                                        borderSide: BorderSide(
+                                            color: mediumblue,
+                                            width: 0
+                                        )
                                     ),
-                                    fillColor: lightdark,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide: BorderSide(
+                                        color: lightblue,
+                                      ),
+                                    ),
+                                    fillColor: lightblue,
                                     filled: true,
                                     counterText: "",
                                     contentPadding: EdgeInsets.all(20),
                                     hintText: AppLocalizations.of(context)!.title,
-                                    hintStyle: TextStyle(color: gray)
+                                    hintStyle: TextStyle(color: white)
                                 ),
-                                onChanged: (text) {textTitle = text;},
-                              )
-                          ),
-                          Container(// Notes
-                            alignment: Alignment.topLeft,
-                            width: 90.w,
-                            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                            foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: dark, width: 1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: TextFormField(
-                              initialValue: textNotes,
-                              style: TextStyle(color: graywhite),
-                              keyboardType: TextInputType.text,
-                              cursorColor: purple,
-                              maxLines: 4,
-                              maxLength: 200,
-                              decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    //borderSide: BorderSide(color: lightdark)
-                                ),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    //borderSide: BorderSide(color: lightdark)
-                                ),
-                                fillColor: lightdark,
-                                filled: true,
-                                counterText: "",
-                                contentPadding: EdgeInsets.all(20),
-                                  hintText: AppLocalizations.of(context)!.note,
-                                  hintStyle: TextStyle(color: gray)
+                                onChanged: (text) => textTitle = text
                               ),
-                              onChanged: (text){ textNotes = text;},
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(5.w, 20, 5.w, 0),
+                            child: Center(
+                              child: TextFormField(
+                                initialValue: textNotes,
+                                style: TextStyle(color: graywhite),
+                                keyboardType: TextInputType.text,
+                                cursorColor: darkblue,
+                                maxLines: 4,
+                                maxLength: 200,
+                                decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(color: lightblue)
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(color: lightblue)
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide: BorderSide(
+                                        color: lightblue,
+                                      ),
+                                    ),
+                                    fillColor: lightblue,
+                                    filled: true,
+                                    counterText: "",
+                                    contentPadding: EdgeInsets.all(20),
+                                    hintText: AppLocalizations.of(context)!.note,
+                                    hintStyle: TextStyle(color: white)
+                                ),
+                                onChanged: (text) => textNotes = text
+                              ),
+                            ),
+                          ),
+
                           Container(// Date
                             alignment: Alignment.centerLeft,
                             width: 90.w,
                             height: 60,
                             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                             foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: dark, width: 1),
+                              border: Border.all(color: lightblue, width: 1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: lightdark,
+                              color: lightblue,
                             ),
                             child: TextButton(
                               style: TextButton.styleFrom(
@@ -360,7 +361,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                     height: 60,
                                     child: Text(
                                       date,
-                                      style: TextStyle(color: gray, fontSize: 13.sp),
+                                      style: TextStyle(color: white, fontSize: 13.sp),
                                     ),
                                   ),
                                 ],
@@ -392,12 +393,12 @@ class _DetailsPageState extends State<DetailsPage> {
                             height: 60,
                             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                             foregroundDecoration: BoxDecoration(
-                              border: Border.all(color: dark, width: 1),
+                              border: Border.all(color: lightblue, width: 1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: lightdark,
+                              color: lightblue,
                             ),
                             child: TextButton(
                                 style: TextButton.styleFrom(
@@ -416,7 +417,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       height: 60,
                                       child: Text(
                                         extime,
-                                        style: TextStyle(color: gray, fontSize: 13.sp),
+                                        style: TextStyle(color: white, fontSize: 13.sp),
                                       ),
                                     ),
                                   ],
@@ -455,12 +456,12 @@ class _DetailsPageState extends State<DetailsPage> {
                               height: 365,
                               margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               foregroundDecoration: BoxDecoration(
-                                border: Border.all(color: dark, width: 1),
+                                border: Border.all(color: lightblue, width: 1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: lightdark,
+                                color: lightblue,
                               ),
                               child: Column(
                                 children: [
@@ -475,7 +476,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                         height: 60,
                                         child: Text(
                                           AppLocalizations.of(context)!.approxtime,
-                                          style: TextStyle(color: gray, fontSize: 13.sp),
+                                          style: TextStyle(color: white, fontSize: 13.sp),
                                         ),
                                       ),
                                     ],
@@ -494,7 +495,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                                 height: 25,
                                                 child: Text(
                                                   AppLocalizations.of(context)!.morning,
-                                                  style: TextStyle(color: gray, fontSize: 13.sp),
+                                                  style: TextStyle(color: white, fontSize: 13.sp),
                                                 ),
                                               ),
                                             ],
@@ -515,7 +516,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                                   extime = AppLocalizations.of(context)!.exacttime;
                                                 });
                                           },
-                                          activeColor: lightpurple,
+                                          activeColor: white,
                                         ),
                                       ),
                                       SizedBox( width: 3.w,)
@@ -535,7 +536,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             height: 25,
                                             child: Text(
                                               AppLocalizations.of(context)!.afternoon,
-                                              style: TextStyle(color: gray, fontSize: 13.sp),
+                                              style: TextStyle(color: white, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -555,7 +556,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: lightpurple,
+                                      activeColor: white,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -575,7 +576,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             height: 25,
                                             child: Text(
                                               AppLocalizations.of(context)!.evening,
-                                              style: TextStyle(color: gray, fontSize: 13.sp),
+                                              style: TextStyle(color: white, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -595,7 +596,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: lightpurple,
+                                      activeColor: white,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -615,7 +616,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             height: 25,
                                             child: Text(
                                               AppLocalizations.of(context)!.night,
-                                              style: TextStyle(color: gray, fontSize: 13.sp),
+                                              style: TextStyle(color: white, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -635,7 +636,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: lightpurple,
+                                      activeColor: white,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,)
@@ -655,7 +656,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             height: 25,
                                             child: Text(
                                               AppLocalizations.of(context)!.allday,
-                                              style: TextStyle(color: gray, fontSize: 13.sp),
+                                              style: TextStyle(color: white, fontSize: 13.sp),
                                             ),
                                           ),
                                         ],
@@ -678,7 +679,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                             extime = AppLocalizations.of(context)!.exacttime;
                                           });
                                       },
-                                      activeColor: lightpurple,
+                                      activeColor: white,
                                     ),
                                   ),
                                   SizedBox( width: 3.w,),

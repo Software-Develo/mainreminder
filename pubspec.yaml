@@ -26,6 +26,7 @@ dependencies:
   flutter_localizations: # Add this line
     sdk: flutter         # Add this line
 
+  animations: ^2.0.2
   syncfusion_localizations: ^19.4.54
   flutter_svg: 1.0.0
   sizer: ^2.0.13
@@ -35,6 +36,7 @@ dependencies:
   syncfusion_flutter_sliders: ^19.2.57
   syncfusion_flutter_core: ^19.2.57
   get_storage: ^2.0.3
+  flutter_slidable: ^1.2.0
 
 
   # The following adds the Cupertino Icons font to your application.
