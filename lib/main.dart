@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:reminder/calendar_page.dart';
 import 'package:reminder/func.dart';
 import 'package:reminder/home_screen.dart';
@@ -25,13 +26,14 @@ Color gray = Color.fromRGBO(255, 255, 255, 0.6);
 Color dark = Color.fromRGBO(26, 17, 37, 1);
 Color lightdark = Color.fromRGBO(38, 29, 50, 1);
 
-Color whitecolor = Color(0xffd3e1ed);
+Color whitecolor = Color(0xffffffff);
 Color darkblue = Color(0xff0a1a4c);
 Color mediumblue = Color(0xff4430ab);
 Color lightblue = Color(0xff534fce);
 
 final data = GetStorage();
 
+var startPage = '/';
 var mainPage = '/main';
 var homePage = '/home';
 var yesterdayPage = '/yesterday';
@@ -53,6 +55,7 @@ void main() async {
 
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -76,8 +79,9 @@ class MyApp extends StatelessWidget {
       ),
 
       //home: MyHomePage(title: AppLocalizations.of(context)!.todayTit),
-      initialRoute: mainPage,
+      initialRoute: startPage,
       routes: {
+        startPage: (context) => StartPage(title: "",),
         mainPage: (context) => MyHomePage(title: ""),
         homePage: (context) => HomePage(),
         yesterdayPage: (context) => YesterdayPage(),
@@ -90,6 +94,119 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class StartPage extends StatefulWidget {
+  StartPage({Key? key, required this.title}) : super(key: key);
+  final String title;
+  @override
+
+  _StartPageState createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Sizer(
+        builder: (context, orientation, deviceType) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Container(
+              child: Column(
+                children: [
+                  SizedBox(height: 15.h),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "A",
+                          style: TextStyle(
+                            color: mediumblue,
+                            fontSize: 50.sp
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Reminder app for",
+                              style: TextStyle(
+                                  color: mediumblue,
+                                  fontSize: 18.sp
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                SizedBox(width: 3.w,),
+                                Text(
+                                  "ll your cases",
+                                  style: TextStyle(
+                                      color: mediumblue,
+                                      fontSize: 18.sp
+                                  ),
+                                ),
+                              ],
+                            )
+
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 3.h,),
+                  Container(
+                    width: 100.w,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset('assets/method-draw-image.svg', color: mediumblue, width: 85.w,)
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 4.h,),
+                  Text(
+                    "Welcome to",
+                    style: TextStyle(
+                        color: mediumblue,
+                        fontSize: 22.sp
+                    ),
+                  ),
+                  SizedBox(height: 1.h,),
+                  Text(
+                    "BrainPecker",
+                    style: TextStyle(
+                        color: mediumblue,
+                        fontSize: 20.sp
+                    ),
+                  ),
+                  SizedBox(height: 10.h,),
+                  Container(
+                    child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                          child: TextButton(
+                            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, mainPage, (Route<dynamic> route) => false),
+                            child: Text(
+                              "Continue",
+                              style: TextStyle(
+                                  color: mediumblue,
+                                  fontSize: 14.sp
+                              ),
+                            ),
+                          ),
+                        )
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        }
+    );
+  }
+}
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -128,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: currentIndex,
                 //backgroundColor: Color.fromRGBO(255, 103, 104, 1),
-                backgroundColor: whitecolor,
+                backgroundColor: Colors.white,
                 showSelectedLabels: true,
                 showUnselectedLabels: true,
                 selectedIconTheme: IconThemeData(

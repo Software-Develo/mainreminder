@@ -68,6 +68,7 @@ class _SettingsPageState extends State<SettingsPage>{
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
+              backgroundColor: whitecolor,
             appBar: AppBar(
               backgroundColor: whitecolor,
               title: Text(AppLocalizations.of(context)!.settingsTit, style: TextStyle(color: mediumblue, fontSize: 15.sp),),

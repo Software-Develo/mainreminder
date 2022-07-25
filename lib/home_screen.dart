@@ -66,35 +66,37 @@ class _HomePageState extends State<HomePage> {
     return Sizer(
         builder: (context, orientation, deviceType) {
           return Scaffold(
+              backgroundColor: Colors.white,
               appBar: AppBar(
-                backgroundColor: whitecolor,
+                backgroundColor: Colors.white,
                 title: Text(title, style: TextStyle(color: mediumblue, fontSize: 15.sp),),
                 centerTitle: true,
 
-                leading: IconButton(
-                  icon: SvgPicture.asset('assets/settings.svg', width: 30, height: 30, color: mediumblue),
-                  onPressed: () {
-                    Navigator.pushNamed(context, settingsPage);
-                  },
+                leadingWidth: 32.sp,
+                leading: OpenContainer(
+                  //transitionDuration: Duration(seconds: 1),
+                    openBuilder: (context, _) => SettingsPage(),
+                    //numRemData = null;
+                    closedElevation: 0,
+                    closedBuilder: (context, openButton) => Container(
+                      color: whitecolor,
+                      padding: EdgeInsets.fromLTRB(9.sp, 0, 0, 0),
+                      child: SvgPicture.asset('assets/settings.svg', color: mediumblue),
+                    )
                 ),
                 actions: [
-/*                  OpenContainer(
+                  OpenContainer(
                     //transitionDuration: Duration(seconds: 1),
                       openBuilder: (context, _) => CalendarPage(),
                       //numRemData = null;
+                      closedElevation: 0,
                       closedBuilder: (context, openButton) => Container(
-
+                        color: whitecolor,
+                        padding: EdgeInsets.fromLTRB(0, 0, 9.sp, 0),
                         child: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: mediumblue),
                       )
                   ),
 
- */
-                  IconButton(
-                    icon: SvgPicture.asset('assets/calendar.svg', height: 30, width: 30,color: mediumblue),
-                    onPressed: () {
-                      Navigator.pushNamed(context, calendarPage);
-                    },
-                  )
                 ],
               ),
               floatingActionButton: OpenContainer(
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 closedBuilder: (context, openButton) => Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xffe8ecf0),
+                    color: Color(0xffffffff),
 
                   ),
                   height: 56,

@@ -19,7 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class DetailsPage extends StatefulWidget {
 
-  DetailsPage({Key? key, numRemData}) : super(key: key);
+  DetailsPage({Key? key, numRemData, itIsCalendarPage}) : super(key: key);
 
   @override
   _DetailsPageState createState() => _DetailsPageState();
@@ -62,10 +62,14 @@ class _DetailsPageState extends State<DetailsPage> {
               setVal(val_rem + 1);
 //                                  loadStartData();
               numRemData = null;
-              if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
+              if(!itIsCalendarPage) //Navigator.popAndPushNamed(context, mainPage);
+                Navigator.pushNamedAndRemoveUntil(context, mainPage, (Route<dynamic> route) => false);
               else{
                 itIsCalendarPage = false;
-                Navigator.popAndPushNamed(context, calendarPage);
+                //Navigator.popAndPushNamed(context, calendarPage);
+                //Navigator.pop(context);
+                //Navigator.popUntil(context, ModalRoute.withName(calendarPage));
+                Navigator.pushNamedAndRemoveUntil(context, calendarPage, (Route<dynamic> route) => false);
               }
             }
             else buildAlertDialogAboutTime();
@@ -74,8 +78,9 @@ class _DetailsPageState extends State<DetailsPage> {
         if(checkTime()){
           setDetails(numRemData!);
 //                                loadStartData();
-          if(!itIsCalendarPage) Navigator.popAndPushNamed(context, mainPage);
-          else Navigator.popAndPushNamed(context, calendarPage);
+          if(!itIsCalendarPage) //Navigator.popAndPushNamed(context, mainPage);
+            Navigator.pushNamedAndRemoveUntil(context, mainPage, (Route<dynamic> route) => false);
+          //else Navigator.pushNamedAndRemoveUntil(context, calendarPage, (Route<dynamic> route) => false);
         }
         else buildAlertDialogAboutTime();
       }
@@ -229,9 +234,12 @@ class _DetailsPageState extends State<DetailsPage> {
 //                    numRemData = null;
                     if(itIsCalendarPage) {
                       itIsCalendarPage = false;
-                      Navigator.popAndPushNamed(context, calendarPage);
+                      //Navigator.pop(context);
+                      //Navigator.popUntil(context, ModalRoute.withName(calendarPage));
+                      Navigator.pushNamedAndRemoveUntil(context, calendarPage, (Route<dynamic> route) => false);
                     }
-                    else Navigator.popAndPushNamed(context, mainPage);
+                    //else Navigator.popUntil(context, ModalRoute.withName(mainPage));
+                    else Navigator.pushNamedAndRemoveUntil(context, mainPage, (Route<dynamic> route) => false);
                   },
                 ),
                 actions: [

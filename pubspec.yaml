@@ -30,7 +30,7 @@ dependencies:
   syncfusion_localizations: ^19.4.54
   flutter_svg: 1.0.0
   sizer: ^2.0.13
-  intl: ^0.17.0
+  intl: 0.17.0
   table_calendar: ^3.0.3
   syncfusion_flutter_calendar: ^19.2.57
   syncfusion_flutter_sliders: ^19.2.57
@@ -75,6 +75,9 @@ flutter:
     - assets/settings.svg
     - assets/time.svg
     - assets/trash.svg
+    - assets/brain_pecker.svg
+    - assets/brain.svg
+    - assets/method-draw-image.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

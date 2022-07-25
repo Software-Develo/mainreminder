@@ -1,5 +1,7 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:reminder/details_page.dart';
 import 'package:reminder/func.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -414,7 +416,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return Sizer(
         builder: (context, orientation, deviceType){
           return Scaffold(
-
+              backgroundColor: whitecolor,
             appBar: AppBar(
               title: Text(AppLocalizations.of(context)!.calendarTit, style: TextStyle(color: mediumblue, fontSize: 15.sp),),
               backgroundColor: whitecolor,
@@ -570,49 +572,52 @@ class _CalendarPageState extends State<CalendarPage> {
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       children: [
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              numRemData = detailsInd[i].index;
-                                                              itIsCalendarPage = true;
-                                                              Navigator.pushNamed(context, detailsPage);
-                                                            },
-                                                            child: Container(
-                                                                child: Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                                  children: [
-                                                                    Container(
-                                                                      width: 70.w,
-                                                                      child: Text(
-                                                                        detailsInd[i].eventName,
-                                                                        style: TextStyle(color: mediumblue,fontSize: 14.sp),
-                                                                        maxLines: 1,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                    if(detailsInd[i].note != '')
-                                                                      Container(
-                                                                        width: 70.w,
-                                                                        child: Text(
-                                                                          detailsInd[i].note,
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                          style: TextStyle(color: lightblue, fontSize: 12.sp),
-                                                                          maxLines: 2,
-                                                                        ),
-                                                                      ),
-                                                                    Container(
-                                                                      width: 70.w,
-                                                                      child: Text(
-                                                                        detailsInd[i].range,
-                                                                        style: TextStyle(color: lightblue, fontSize: 12.sp),
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
+                                                        OpenContainer(
+                                                          //transitionDuration: Duration(seconds: 1),
+                                                            openBuilder: (context, _) => DetailsPage(numRemData: numRemData = detailsInd[i].index,itIsCalendarPage: itIsCalendarPage = true),
+                                                            //numRemData = null;
+                                                          closedColor: whitecolor,
+                                                            closedElevation: 0,
 
-                                                                  ],
+                                                            closedBuilder: (context, openButton) => Container(
+                                                                  color: whitecolor,
+                                                                    child: Column(
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                                      children: [
+                                                                        Container(
+                                                                          width: 70.w,
+                                                                          child: Text(
+                                                                            detailsInd[i].eventName,
+                                                                            style: TextStyle(color: mediumblue,fontSize: 14.sp),
+                                                                            maxLines: 1,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+                                                                        if(detailsInd[i].note != '')
+                                                                          Container(
+                                                                            width: 70.w,
+                                                                            child: Text(
+                                                                              detailsInd[i].note,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(color: lightblue, fontSize: 12.sp),
+                                                                              maxLines: 2,
+                                                                            ),
+                                                                          ),
+                                                                        Container(
+                                                                          width: 70.w,
+                                                                          child: Text(
+                                                                            detailsInd[i].range,
+                                                                            style: TextStyle(color: lightblue, fontSize: 12.sp),
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+
+                                                                      ],
+                                                                    )
                                                                 )
-                                                            )
                                                         ),
+
 
                                                       ],
                                                     ),
